@@ -43,7 +43,7 @@ app.get( '/auth/google/callback',
 );
 
 app.get('/view', isLoggedIn, (req,res) => {
-  res.render('view');
+  res.render('index');
   roomId="";
   userId="";
   ROOM_ID="";
