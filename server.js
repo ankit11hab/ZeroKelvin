@@ -53,6 +53,10 @@ app.get('/view', isLoggedIn, async (req,res) => {
   res.redirect('/home');
 })
 
+app.get('/', (req,res) => {
+  res.render('landing');
+})
+
 app.get('/home', isLoggedIn, async (req, res) => {
   const Auctions = await db.collection('Auctions').get();
   const list = Auctions.docs.map((doc)=>({id:doc.id,...doc.data()}));
@@ -82,7 +86,7 @@ app.get('/detail/:id', async (req, res) => {
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
-app.get('/',  (req, res) => {
+app.get('/login',  (req, res) => {
   res.render('login')
 })
 
