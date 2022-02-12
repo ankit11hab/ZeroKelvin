@@ -73,12 +73,17 @@ app.get('/schedule', isLoggedIn, (req,res)=>{
   res.render('schedule',{user:req.user})
 })
 
-// app.get('/logout', function(req, res) {
-//     req.session.destroy(function(e){
-//         req.logout();
-//         res.redirect('/');
-//     });
-// });
+app.get('/profile', isLoggedIn, (req,res)=>{
+  console.log(req.user);
+  res.render('profile',{user:req.user})
+})
+
+app.get('/logout', function(req, res) {
+    req.session.destroy(function(e){
+        req.logout();
+        res.redirect('/');
+    });
+});
 
 app.get('/auth/google/failure', (req, res) => {
   res.send('Failed to authenticate..');
