@@ -19,7 +19,15 @@
     Auctions = <%-JSON.stringify(Auctions)%>;
   </script>
 
+  <style>
+    #main_section{
+      padding: 50px;
+    }
 
+    #main_section section{
+      margin: 25px;
+    }
+  </style>
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 
@@ -77,15 +85,17 @@
     <!-- end slider section -->
   </div>
 
-  <section id="data">
+  <section id="main_section">
 
-  </section>
-
-  <section >
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Schedule Auction
-    </button>
+    <section id="data">
+      
+    </section>
+    
+    <section >
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Schedule Auction
+      </button>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -116,10 +126,8 @@
       </div>
     </div>
   </section>
-
-  <section class="form_section">
-      
-  </section>
+  
+</section>
 
   <!-- info section -->
   <section class="info_section ">
@@ -271,6 +279,7 @@
             <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.Heading.stringValue}</h5>
             <p class="card-text">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.description.stringValue}</p>
             <a href="/editauctiondetails/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Edit Auction</a>
+            <a href="/auctionItems/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Add or Remove Items for Auction</a>
           </div>
         </div>`;
         main_section.appendChild(para);
