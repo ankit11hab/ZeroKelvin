@@ -56,7 +56,7 @@ app.get('/view', isLoggedIn, async (req,res) => {
 
 app.get('/home', isLoggedIn, async (req, res) => {
   const Auctions = await db.collection('Auctions').get();
-  const list = Auctions.docs.map((doc)=>doc.data());
+  const list = Auctions.docs.map((doc)=>({id:doc.id,...doc.data()}));
   let upcomingAuctions = [], ongoingAuctions = [], pastAuctions=[];
   var currTime = new Date();
   console.log(currTime);
@@ -70,6 +70,11 @@ app.get('/home', isLoggedIn, async (req, res) => {
   });
   res.render('index',{Auctions:list,moment:moment,upcomingAuctions:upcomingAuctions,ongoingAuctions:ongoingAuctions,
     pastAuctions:pastAuctions});
+})
+
+app.get('/detail/:id', async (req, res) => {
+  const product = await db.collection('Auctions').doc(req.params.id).get();
+  res.render('product_detail',{product:product.data()})
 })
 
 app.set('view engine', 'ejs')
