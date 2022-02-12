@@ -8,6 +8,7 @@ const { ExpressPeerServer } = require('peer');
 require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
+var bodyParser = require('body-parser');
 
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -30,6 +31,7 @@ app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/peerjs', peerServer);
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/google', (req, res) => {
   res.render('login')
@@ -49,9 +51,9 @@ app.get( '/auth/google/callback',
 
 app.get('/view', isLoggedIn, async (req,res) => {
   const userRef = db.collection('Users').doc(req.user.id);
-  const doc = await userRef.get();
+  doc = await userRef.get();
   if (!doc.exists) {
-    const doc = await db.collection('Users').doc(req.user.id).set(req.user);
+    doc = await db.collection('Users').doc(req.user.id).set(req.user);
   }
   res.redirect('/home');
 })
@@ -69,8 +71,32 @@ app.get('/',  (req, res) => {
 
 
 
-app.get('/schedule', isLoggedIn, (req,res)=>{
-  res.render('schedule',{user:req.user})
+app.get('/schedule', isLoggedIn, async (req,res)=>{
+  const userRef = db.collection('Users').doc(req.user.id);
+  Users = await userRef.get();
+  const auctionRef = db.collection('Users').doc(req.user.id).collection('Auctions');
+  Auctions = await auctionRef.get();
+  Auctions.forEach(doc => {
+    console.log(doc.id, '=>', doc.data());
+  });
+  res.render('schedule',{ Users : Users, Auctions : Auctions})
+})
+
+app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
+  const res1 = await db.collection('Auctions').add(req.body);
+  await db.collection('Auctions').doc(res1.id).update({
+    Author : {
+      id : req.user.id,
+      displayName : req.user.displayName,
+      email : req.user.email,
+    }
+  });
+  console.log(req.user)
+  await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
+    id : res1.id,
+    data : req.body
+  });
+  res.redirect('/schedule');
 })
 
 app.get('/profile', isLoggedIn, (req,res)=>{
@@ -90,8 +116,6 @@ app.get('/auth/google/failure', (req, res) => {
   res.send('<a href="/auth/google">Authenticate with Google</a>');
   res.render('login');
 });
-
-var ObjectListofALL = {}
 
 
 
