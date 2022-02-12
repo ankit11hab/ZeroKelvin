@@ -55,7 +55,7 @@ app.get('/view', isLoggedIn, async (req,res) => {
 
 app.get('/home', isLoggedIn, async (req, res) => {
   const Auctions = await db.collection('Auctions').get();
-  const list = Auctions.docs.map((doc)=>doc.data());
+  const list = Auctions.docs.map((doc)=>({id:doc.id,...doc.data()}));
   let upcomingAuctions = [], ongoingAuctions = [], pastAuctions=[];
   var currTime = new Date();
   console.log(currTime);
@@ -69,6 +69,11 @@ app.get('/home', isLoggedIn, async (req, res) => {
   });
   res.render('index',{Auctions:list,moment:moment,upcomingAuctions:upcomingAuctions,ongoingAuctions:ongoingAuctions,
     pastAuctions:pastAuctions});
+})
+
+app.get('/detail/:id', async (req, res) => {
+  const product = await db.collection('Auctions').doc(req.params.id).get();
+  res.render('product_detail',{product:product.data()})
 })
 
 app.set('view engine', 'ejs')
@@ -111,8 +116,12 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
 });
 
 app.get('/profile', isLoggedIn, (req,res)=>{
-  console.log(req.user);
   res.render('profile',{user:req.user})
+})
+
+app.get('/productDetail', isLoggedIn, (req,res)=>{
+  console.log(req.user);
+  res.render('product_detail',{user:req.user})
 })
 
 app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
@@ -126,9 +135,12 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
 app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
-  const auctionRef = db.collection('Auctions').doc(req.params.room);
-  Auction = await auctionRef.get();
-  res.render('auctionItems', { roomId: req.params.room, Auction : Auction, Users : Users})
+  const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items');
+  const snapshot = await itemsRef.get();
+  snapshot.forEach(doc => {
+    console.log(doc.id, '=>', doc.data());
+  });
+  res.render('auctionItems', { roomId: req.params.room, Items : snapshot, Users : Users})
 })
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
