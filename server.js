@@ -10,7 +10,7 @@ require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
-const multer=require('multer');
+// const multer=require('multer');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
 initializeApp({
