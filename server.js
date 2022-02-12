@@ -1,4 +1,5 @@
 const express = require('express')
+var moment = require('moment');
 const session = require('express-session');
 const passport = require('passport');
 require('./auth');
@@ -61,8 +62,19 @@ app.get('/view', isLoggedIn, async (req,res) => {
 app.get('/home', isLoggedIn, async (req, res) => {
   const Auctions = await db.collection('Auctions').get();
   const list = Auctions.docs.map((doc)=>doc.data());
-  console.log(list);
-  res.render('index',{Auctions:list});
+  let upcomingAuctions = [], ongoingAuctions = [], pastAuctions=[];
+  var currTime = new Date();
+  console.log(currTime);
+  list.map((item)=>{
+    if(item.StartingTime>currTime) 
+      upcomingAuctions.push(item);
+    else if(item.endingTime<currTime)
+      pastAuctions.push(item);
+    else
+      ongoingAuctions.push(item);
+  });
+  res.render('index',{Auctions:list,moment:moment,upcomingAuctions:upcomingAuctions,ongoingAuctions:ongoingAuctions,
+    pastAuctions:pastAuctions});
 })
 
 app.set('view engine', 'ejs')

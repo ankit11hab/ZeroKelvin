@@ -494,6 +494,12 @@ a:focus {
           justify-content: space-between;
 }
 
+.product_description {
+  margin-bottom: 15px;
+  color: #8f8f8f;
+  font-size: 15px;
+}
+
 .product_section .box .star_container {
   color: #f2b01e;
 }
