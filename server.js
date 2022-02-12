@@ -72,8 +72,11 @@ app.get('/home', isLoggedIn, async (req, res) => {
 })
 
 app.get('/detail/:id', async (req, res) => {
-  const product = await db.collection('Auctions').doc(req.params.id).get();
-  res.render('product_detail',{product:product.data()})
+  const auction = await db.collection('Auctions').doc(req.params.id).get();
+  const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
+  const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  console.log(list);
+  res.render('auction_detail',{auction:auction.data(),auctionItem:list})
 })
 
 app.set('view engine', 'ejs')
