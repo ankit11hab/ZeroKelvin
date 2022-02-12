@@ -106,7 +106,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/auctionRegister" method="POST">
+            <form action="/auctionRegister" enctype='multipart/form-data' method="POST">
+              <label for="picture">Image</label>
+              <input type="file" accept="image/*" id="picture" name="picture"><br>
               <label for="name">Name of Organization</label>
               <input type="text" id="name" name="name"><br>
               <label for="Title of Auction">Title of Auction</label>
