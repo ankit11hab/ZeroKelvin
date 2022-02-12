@@ -82,7 +82,12 @@ app.get('/detail/:id', async (req, res) => {
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
   console.log(list);
-  res.render('auction_detail',{auction:auction.data(),auctionItem:list})
+  res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list})
+})
+
+app.get('/detail/:id/item/:itemID', async (req, res) => {
+  const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
+  res.render('item_detail',{item:item.data()});
 })
 
 app.set('view engine', 'ejs')
