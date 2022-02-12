@@ -87,10 +87,7 @@ app.get('/detail/:id', async (req, res) => {
 
 app.get('/detail/:id/item/:itemID', async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
-  const Authors = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
-  const list = Authors.docs.map((doc)=>({id:doc.id,...doc.data()}));
-  console.log(list);
-  res.render('item_detail',{item:item.data(),bids:list});
+  res.render('item_detail',{item:item.data()});
 })
 
 app.set('view engine', 'ejs')

@@ -118,13 +118,13 @@
                             <th scope="col">Bidder</th>
                             <th scope="col">Bid</th>
                         </tr>
-                        <% for(var i=0; i < bids.length; i++) { %>
+                        <% for(var i=0; i < item.Bids.length; i++) { %>
                             <tr>
                                 <td>
-                                    <%=bids[i].Author%>
+                                    <%=item.Bids[i].Author%>
                                 </td>
                                 <td>
-                                    $<%=bids[i].Value%>
+                                    $<%=item.Bids[i].Value%>
                                 </td>
                             </tr>
                             <% } %>
