@@ -59,9 +59,17 @@
                 <li class="nav-item">
                   <a class="nav-link" href="/schedule">Auction</a>
                 </li>
+                <% if(isLoggedIn){ %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/Profile">Profile</a>
+                  </li>
+               <% } %>
+               <%if(!isLoggedIn){ %>
                 <li class="nav-item">
-                  <a class="nav-link" href="/Profile">Profile</a>
+                  <a class="nav-link" href="/login">Log in</a>
                 </li>
+                <% } %>
+                
               </ul>
             </div>
           </nav>
