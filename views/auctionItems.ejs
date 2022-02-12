@@ -18,7 +18,7 @@
   <script type='text/javascript'>
     var roomId = "<%=roomId%>";
     Users = <%-JSON.stringify(Users)%>;
-    Auction = <%-JSON.stringify(Auction)%>;
+    Items = <%-JSON.stringify(Items)%>;
   </script>
 
 
@@ -38,7 +38,7 @@
   <link href="/css/style.css" rel="stylesheet" />
   <!-- responsive style -->
   <link href="/css/responsive.css" rel="stylesheet" />
-  <link href="/editauction.css" rel="stylesheet" />
+  <link href="/auctionItems.css" rel="stylesheet" />
 
 </head>
 
@@ -96,7 +96,27 @@
                 </div>
             </div>
             <div class="col-md-8 border-right">
-              <section >
+              <div class="container">
+                <div class="row">
+                  <div class="col-12">
+                  <table class="table table-image">
+                    <thead>
+                      <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Article Name</th>
+                        <th scope="col">Starting Bid</th>
+                        <th scope="col">Current Bid</th>
+                        <th scope="col">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody id="table_body">
+                    </tbody>
+                  </table>   
+                  </div>
+                </div>
+              </div>
+              <section>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                    Add Items
@@ -260,9 +280,25 @@
   <script src="/js/custom.js"></script>
   
   <script>
-      document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
-      document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
-      document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
+    document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
+    document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
+    document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
+    console.log(Items);
+    function myfnc() {
+      for (let i = 0; i < Items._materializedDocs.length; i++) {
+        var temp = `<tr><th scope="row">${i+1}</th>
+                      <td class="w-25">
+                        <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg" class="img-fluid img-thumbnail" alt="Sheep">
+                      </td>
+                      <td>${Items._materializedDocs[i]._fieldsProto.name.stringValue}</td>
+                      <td>${Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue}</td>
+                      <td>-</td>
+                      <td><img src="/delete_black_24dp.svg" /></td><tr>`;
+        document.getElementById('table_body').innerHTML += temp;
+      }
+    };
+    myfnc(); 
+    console.log('Hi');
   </script>
 
 </body>
