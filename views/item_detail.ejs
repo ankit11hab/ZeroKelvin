@@ -26,7 +26,9 @@
     <link href="/css/style.css" rel="stylesheet" />
     <!-- responsive style -->
     <link href="/css/responsive.css" rel="stylesheet" />
-
+    <script>
+        var itemData = <%-JSON.stringify(item)%>;
+    </script>
 </head>
 
 <body>
@@ -91,9 +93,8 @@
                         </div>
                         <div class="col-6">
                             <input id="place-bid" type="text" style="text-align: center;font-size: 20px;" placeholder="$ Max. bid"><button 
-                            style="border:1px solid rgb(173, 173, 173);height:36px;transform: translate(0,-1px);">Place Bid</button>
+                            style="border:1px solid rgb(173, 173, 173);height:36px;transform: translate(0,-1px);" id="bidplaced">Place Bid</button>
                         </div>
-                    </div>
                 </div>
                 <div class="row" style="margin-top:100px">
                     <div class="col-6">
@@ -266,6 +267,26 @@
     <!-- custom js -->
     <script src="/js/custom.js"></script>
 
+    <script>
+        var bidsData = itemData.Bids
+        var placeBidbtn = document.getElementById('bidplaced');
+        console.log(itemData);
+        placeBidbtn.onclick = function () {
+            var multiple = parseInt("<%=item.Multiple%>");
+            var value = document.getElementById('place-bid').value;
+            console.log(value)
+            if(value==""){
+                alert('Please Enter a value to place a bid')
+            }else if(value<=bidsData[bidsData.length-1].Value){
+                alert(`Please Enter bid greater than current Bid`);
+            }
+            else if(value%multiple!=0){
+                alert(`Please Enter bid in the multiple of ${multiple}`);
+            }else{
+                document.getElementById('place-bid').value = "";
+            }
+        } 
+    </script>
 </body>
 
 </html>
