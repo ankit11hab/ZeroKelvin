@@ -259,6 +259,22 @@
       node = document.createTextNode(`You have ${Auctions._materializedDocs.length} scheduled Auctions.`);
       para.appendChild(node);
       main_section.appendChild(para);
+      for (var i = 0; i < Auctions._materializedDocs.length; i++) {
+        console.log(Auctions._materializedDocs[i]);
+        para = document.createElement("div");
+        para.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.title.stringValue} organized by ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.name.stringValue}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.Heading.stringValue}</h5>
+            <p class="card-text">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.description.stringValue}</p>
+            <a href=":editauctiondetails/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Edit Auction</a>
+          </div>
+        </div>`;
+        main_section.appendChild(para);
+      }
     }
     console.log(Auctions);
   </script>
