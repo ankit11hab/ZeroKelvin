@@ -114,22 +114,28 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
 })
 
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
-  //add image upload code here
-  const res1 =  db.collection('Auctions').add({data:req.body,FileType: path.extname(req.file.originalname.toLowerCase()),});
-  db.collection('Auctions').doc(res1.id).update({
-      Author : {
-        id : req.user.id,
-        displayName : req.user.displayName,
-        
-        email : req.user.email,
-      }
-    });
-    console.log(req.user)
-    db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
-      id : res1.id,
-      data : req.body,
-      FileType: path.extname(req.file.originalname.toLowerCase()),
-    });
+  const res1 = await db.collection('Auctions').add(req.body);
+  await db.collection('Auctions').doc(res1.id).update({
+    Author : {
+      id : req.user.id,
+      displayName : req.user.displayName,
+      email : req.user.email,
+    }
+  });
+  console.log(req.user)
+  await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
+    id : res1.id,
+    data : req.body
+  });
+  res.redirect('/schedule');
+});
+
+app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
+  const auctionRef = db.collection('Auctions').doc(req.params.room);
+  const res1 = await auctionRef.update(req.body);
+  const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
+  await userItems.update({data : req.body})
+  res.redirect(`/editauctiondetails/${req.params.room}`);
 });
 
 app.get('/profile', isLoggedIn, (req,res)=>{
@@ -148,17 +154,15 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
   Auction = await auctionRef.get();
   res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
+
 app.post('/editauctiondetails/:room',isLoggedIn, async (req, res) => {
     db.collection('Auctions').doc(req.params.room).update({
-   
-        name:req.body.name,
-        title:req.body.title,
-        Heading:req.body.heading
-
+      name:req.body.name,
+      title:req.body.title,
+      Heading:req.body.heading
     });
     res.redirect(req.get('referer'));
-  
-  });
+});
 
 app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
