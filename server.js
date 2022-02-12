@@ -130,9 +130,12 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
 app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
-  const auctionRef = db.collection('Auctions').doc(req.params.room);
-  Auction = await auctionRef.get();
-  res.render('auctionItems', { roomId: req.params.room, Auction : Auction, Users : Users})
+  const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items');
+  const snapshot = await itemsRef.get();
+  snapshot.forEach(doc => {
+    console.log(doc.id, '=>', doc.data());
+  });
+  res.render('auctionItems', { roomId: req.params.room, Items : snapshot, Users : Users})
 })
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
