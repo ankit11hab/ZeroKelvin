@@ -58,8 +58,11 @@ app.get('/view', isLoggedIn, async (req,res) => {
   res.redirect('/home');
 })
 
-app.get('/home', isLoggedIn, (req, res) => {
-  res.render('index');
+app.get('/home', isLoggedIn, async (req, res) => {
+  const Auctions = await db.collection('Auctions').get();
+  const list = Auctions.docs.map((doc)=>doc.data());
+  console.log(list);
+  res.render('index',{Auctions:list});
 })
 
 app.set('view engine', 'ejs')
