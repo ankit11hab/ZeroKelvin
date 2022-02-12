@@ -8,28 +8,22 @@
   <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <!-- Site Metas -->
-  <link rel="icon" href="images/fevicon.png" type="image/gif" />
+  <link rel="icon" href="/images/fevicon.png" type="image/gif" />
   <meta name="keywords" content="" />
   <meta name="description" content="" />
   <meta name="author" content="" />
 
   <title>E - AUCTION</title>
+
   <script type='text/javascript'>
+    var roomId = "<%=roomId%>";
     Users = <%-JSON.stringify(Users)%>;
-    Auctions = <%-JSON.stringify(Auctions)%>;
+    Auction = <%-JSON.stringify(Auction)%>;
   </script>
 
-  <style>
-    #main_section{
-      padding: 50px;
-    }
 
-    #main_section section{
-      margin: 25px;
-    }
-  </style>
   <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -38,12 +32,13 @@
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet"> <!-- range slider -->
 
   <!-- font awesome style -->
-  <link href="css/font-awesome.min.css" rel="stylesheet" />
+  <link href="/css/font-awesome.min.css" rel="stylesheet" />
 
   <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet" />
+  <link href="/css/style.css" rel="stylesheet" />
   <!-- responsive style -->
-  <link href="css/responsive.css" rel="stylesheet" />
+  <link href="/css/responsive.css" rel="stylesheet" />
+  <link href="/editauction.css" rel="stylesheet" />
 
 </head>
 
@@ -85,51 +80,47 @@
     <!-- end slider section -->
   </div>
 
-  <section id="main_section">
-
-    <section id="data">
-      
-    </section>
-    
-    <section >
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Schedule Auction
-      </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Schedule Auction</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form action="/auctionRegister" enctype='multipart/form-data' method="POST">
-              <label for="picture">Image</label>
-              <input type="file" accept="image/*" id="picture" name="picture"><br>
-              <label for="name">Name of Organization</label>
-              <input type="text" id="name" name="name"><br>
-              <label for="Title of Auction">Title of Auction</label>
-              <input type="text" id="title" name="title"><br>
-              <label for="Heading of Auction">Heading of Auction</label>
-              <input type="text" id="Heading" name="Heading"><br>
-              <label for="description of Auction">Description About Auction</label>
-              <input type="text" id="description" name="description"><br>
-              <label for="StartingTime">Starting Date and Time</label>
-              <input type="datetime-local" id="StartingTime" name="StartingTime">
-              <label for="EndingTime">Ending Date and Time</label>
-              <input type="datetime-local" id="EndingTime" name="EndingTime">
-              <input type="submit" value="Submit">
-            </form> 
-          </div>
+  
+  <section>
+    <div class="container rounded bg-white mt-5 mb-5">
+        <div class="row" style="border: solid 1px grey;">
+            <div class="col-md-4 border-right">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <img class="rounded-circle mt-5" width="150px" id="myImg">
+                    <span class="font-weight-bold" id="name"></span>
+                    <span class="text-black-50" id="email"></span>
+                    <span> </span>
+                </div>
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <a href="/auctionItems/<%=roomId%>">Auction Items</a>
+                </div>
+            </div>
+            <div class="col-md-8 border-right">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Auction Settings</h4>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" value=""></div>
+                        <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control" value="" placeholder="surname"></div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" class="form-control" placeholder="enter phone number" value=""></div>
+                        <div class="col-md-12"><label class="labels">Address Line 1</label><input type="text" class="form-control" placeholder="enter address line 1" value=""></div>
+                        <div class="col-md-12"><label class="labels">Address Line 2</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
+                        <div class="col-md-12"><label class="labels">Postcode</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
+                        <div class="col-md-12"><label class="labels">State</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
+                        <div class="col-md-12"><label class="labels">Area</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
+                        <div class="col-md-12"><label class="labels">Email ID</label><input type="text" class="form-control" placeholder="enter email id" value=""></div>
+                        <div class="col-md-12"><label class="labels">Education</label><input type="text" class="form-control" placeholder="education" value=""></div>
+                    </div>
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                </div>
+            </div>
+            
         </div>
-      </div>
     </div>
   </section>
-  
-</section>
 
   <!-- info section -->
   <section class="info_section ">
@@ -251,43 +242,16 @@
 
 
   <!-- jQery -->
-  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="/js/jquery-3.4.1.min.js"></script>
   <!-- bootstrap js -->
-  <script src="js/bootstrap.js"></script>
+  <script src="/js/bootstrap.js"></script>
   <!-- custom js -->
-  <script src="js/custom.js"></script>
-
+  <script src="/js/custom.js"></script>
+  
   <script>
-    main_section = document.getElementById('data');
-    if(Auctions._materializedDocs.length==0){
-      const para = document.createElement("p");
-      const node = document.createTextNode("You have no scheduled Auctions. Schedule an auction now !!");
-      para.appendChild(node);
-      main_section.appendChild(para);
-    }else{
-      para = document.createElement("p");
-      node = document.createTextNode(`You have ${Auctions._materializedDocs.length} scheduled Auctions.`);
-      para.appendChild(node);
-      main_section.appendChild(para);
-      for (var i = 0; i < Auctions._materializedDocs.length; i++) {
-        console.log(Auctions._materializedDocs[i]);
-        para = document.createElement("div");
-        para.innerHTML = `
-        <div class="card">
-          <div class="card-header">
-            ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.title.stringValue} organized by ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.name.stringValue}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.Heading.stringValue}</h5>
-            <p class="card-text">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.description.stringValue}</p>
-            <a href="/editauctiondetails/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Edit Auction</a>
-            <a href="/auctionItems/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Add or Remove Items for Auction</a>
-          </div>
-        </div>`;
-        main_section.appendChild(para);
-      }
-    }
-    console.log(Auctions);
+      document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
+      document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
+      document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
   </script>
 
 </body>
