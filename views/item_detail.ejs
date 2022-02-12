@@ -28,6 +28,8 @@
     <link href="/css/responsive.css" rel="stylesheet" />
     <script>
         var itemData = <%-JSON.stringify(item)%>;
+        var userName = "<%=userName%>";
+        const url = document.URL ;
     </script>
 </head>
 
@@ -267,6 +269,8 @@
     <!-- custom js -->
     <script src="/js/custom.js"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script>
         var bidsData = itemData.Bids
         var placeBidbtn = document.getElementById('bidplaced');
@@ -283,7 +287,41 @@
             else if(value%multiple!=0){
                 alert(`Please Enter bid in the multiple of ${multiple}`);
             }else{
-                document.getElementById('place-bid').value = "";
+                document.getElementById('place-bid').value = "" ;
+                var BidUrl = url + '/placeBid';
+                var data = {
+                    "Author" : userName,
+                    "Value" : value
+                }
+                bidsData.push(data);
+                var BidsJson = {
+                    "Bids" : bidsData
+                }
+                console.log(BidsJson)
+                $.ajax({
+                    url: BidUrl,
+                    type: "POST",
+                    dataType: "xml/html/script/json", // expected format for response
+                    contentType: "application/json", // send as JSON
+                    data: JSON.stringify(BidsJson),
+
+                    complete: function() {
+                        //called when complete
+                        console.log("complete");
+                    },
+
+                    success: function() {
+                        console.log("success");
+                    },
+
+                    error: function(result) {
+                        console.log("error");
+                        console.log(result);
+                    },
+                });
+                                    // $.post(BidUrl,BidsJson,function(data,status){
+                //     console.log(`${data} and status is ${status}`);
+                // });
             }
         } 
     </script>
