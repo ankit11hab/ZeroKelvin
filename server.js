@@ -1,6 +1,7 @@
 const express = require('express')
 const session = require('express-session');
 const passport = require('passport');
+const path = require("path");
 require('./auth');
 const app = express()
 const server = require('http').Server(app)
@@ -9,18 +10,17 @@ require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
-
+const multer=require('multer');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
 initializeApp({
   credential: cert(serviceAccount)
 });
-
 const db = getFirestore();
-
 const peerServer = ExpressPeerServer(server, {
   debug: true
 });
+
 
 function isLoggedIn(req, res, next) {
   req.user ? next() : res.sendStatus(401);
@@ -83,21 +83,22 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
 })
 
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
-  const res1 = await db.collection('Auctions').add(req.body);
-  await db.collection('Auctions').doc(res1.id).update({
-    Author : {
-      id : req.user.id,
-      displayName : req.user.displayName,
-      email : req.user.email,
-    }
-  });
-  console.log(req.user)
-  await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
-    id : res1.id,
-    data : req.body
-  });
-  res.redirect('/schedule');
-})
+  const res1 =  db.collection('Auctions').add({data:req.body,FileType: path.extname(req.file.originalname.toLowerCase()),});
+  db.collection('Auctions').doc(res1.id).update({
+      Author : {
+        id : req.user.id,
+        displayName : req.user.displayName,
+        
+        email : req.user.email,
+      }
+    });
+    console.log(req.user)
+    db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
+      id : res1.id,
+      data : req.body,
+      FileType: path.extname(req.file.originalname.toLowerCase()),
+    });
+});
 
 app.get('/profile', isLoggedIn, (req,res)=>{
   console.log(req.user);
