@@ -4,7 +4,6 @@ const passport = require('passport');
 require('./auth');
 const app = express()
 const server = require('http').Server(app)
-const { ExpressPeerServer } = require('peer');
 require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
@@ -18,9 +17,6 @@ initializeApp({
 
 const db = getFirestore();
 
-const peerServer = ExpressPeerServer(server, {
-  debug: true
-});
 
 function isLoggedIn(req, res, next) {
   req.user ? next() : res.sendStatus(401);
@@ -30,7 +26,6 @@ function isLoggedIn(req, res, next) {
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/peerjs', peerServer);
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/google', (req, res) => {
@@ -107,6 +102,27 @@ app.get('/profile', isLoggedIn, (req,res)=>{
   res.render('profile',{user:req.user})
 })
 
+app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
+  const userRef = db.collection('Users').doc(req.user.id);
+  Users = await userRef.get();
+  const auctionRef = db.collection('Auctions').doc(req.params.room);
+  Auction = await auctionRef.get();
+  res.render('editauction', { roomId: req.params.room, Auction : Auction, Users : Users})
+})
+
+app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
+  const userRef = db.collection('Users').doc(req.user.id);
+  Users = await userRef.get();
+  const auctionRef = db.collection('Auctions').doc(req.params.room);
+  Auction = await auctionRef.get();
+  res.render('auctionItems', { roomId: req.params.room, Auction : Auction, Users : Users})
+})
+
+app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
+  const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add(req.body);
+  res.redirect('/auctionItems/:room');
+})
+
 app.get('/logout', function(req, res) {
     req.session.destroy(function(e){
         req.logout();
@@ -119,7 +135,6 @@ app.get('/auth/google/failure', (req, res) => {
   res.send('<a href="/auth/google">Authenticate with Google</a>');
   res.render('login');
 });
-
 
 
 server.listen( process.env.PORT || 3000)
