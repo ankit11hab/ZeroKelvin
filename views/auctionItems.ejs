@@ -284,6 +284,7 @@
     document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
     document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
     console.log(Items);
+    Itemids = <%-JSON.stringify(Itemids)%>;
     function myfnc() {
       for (let i = 0; i < Items._materializedDocs.length; i++) {
         var temp = `<tr><th scope="row">${i+1}</th>
@@ -293,7 +294,7 @@
                       <td>${Items._materializedDocs[i]._fieldsProto.name.stringValue}</td>
                       <td>${Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue}</td>
                       <td>-</td>
-                      <td><img src="/delete_black_24dp.svg" /></td><tr>`;
+                      <td><a href="/deleteItems/${roomId}/${Itemids[i]}"><img src="/delete_black_24dp.svg" /></a></td><tr>`;
         document.getElementById('table_body').innerHTML += temp;
       }
     };

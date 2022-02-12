@@ -125,27 +125,54 @@ app.get('/productDetail', isLoggedIn, (req,res)=>{
 })
 
 app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
+  if(req.method=='POST'){
+    db.collection('Auctions').doc(req.params.room).update({
+   
+        name:req.body.name,
+        title:req.body.title,
+        heading:req.body.heading
+
+    });
+    res.redirect(req.get('referer'));
+  }
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   Auction = await auctionRef.get();
-  res.render('editauction', { roomId: req.params.room, Auction : Auction, Users : Users})
+  console.log(Auction.data().name)
+  res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
+app.post('/editauctiondetails/:room',isLoggedIn, async (req, res) => {
+    db.collection('Auctions').doc(req.params.room).update({
+   
+        name:req.body.name,
+        title:req.body.title,
+        Heading:req.body.heading
+
+    });
+    res.redirect(req.get('referer'));
+  
+  });
 
 app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items');
   const snapshot = await itemsRef.get();
+  itemids=[]
   snapshot.forEach(doc => {
-    console.log(doc.id, '=>', doc.data());
+    itemids.push(doc.id)
   });
-  res.render('auctionItems', { roomId: req.params.room, Items : snapshot, Users : Users})
+  res.render('auctionItems', { roomId: req.params.room,Itemids:itemids, Items : snapshot, Users : Users})
+})
+app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
+  const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items').doc(req.params.itemid.toString()).delete();
+  res.redirect(req.get('referer'));
 })
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add(req.body);
-  res.redirect('/auctionItems/:room');
+  res.redirect(req.get('referer'));
 })
 
 app.get('/logout', function(req, res) {

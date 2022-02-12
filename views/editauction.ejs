@@ -18,7 +18,6 @@
   <script type='text/javascript'>
     var roomId = "<%=roomId%>";
     Users = <%-JSON.stringify(Users)%>;
-    Auction = <%-JSON.stringify(Auction)%>;
   </script>
 
 
@@ -100,15 +99,17 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="text-right">Auction Settings</h4>
                     </div>
+                    <form method="POST">
                     <div class="row mt-2">
-                        <div class="col-md-6"><label class="labels">Organization Name</label><input type="text" class="form-control" id="name"></div>
-                        <div class="col-md-6"><label class="labels">Title</label><input type="text" class="form-control" id="Title"></div>
+                        <div class="col-md-6"><label class="labels">Organization Name</label><input type="text" class="form-control" value="<%=Auction.name%>" name="name"id="name"></div>
+                        <div class="col-md-6"><label class="labels">Title</label><input type="text" class="form-control" value="<%=Auction.title%>" name="title" id="title"></div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">Heading</label><input type="text" class="form-control" id="heading"></div>
+                        <div class="col-md-12"><label class="labels">Heading</label><input type="text"  value="<%=Auction.Heading%>" class="form-control" name="heading"id="heading"></div>
                         
                     </div>
-                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Auction</button></div>
+                  </form>
                 </div>
             </div>
             
