@@ -128,21 +128,10 @@ app.get('/productDetail', isLoggedIn, (req,res)=>{
 })
 
 app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
-  if(req.method=='POST'){
-    db.collection('Auctions').doc(req.params.room).update({
-   
-        name:req.body.name,
-        title:req.body.title,
-        heading:req.body.heading
-
-    });
-    res.redirect(req.get('referer'));
-  }
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   Auction = await auctionRef.get();
-  console.log(Auction.data().name)
   res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
 app.post('/editauctiondetails/:room',isLoggedIn, async (req, res) => {
