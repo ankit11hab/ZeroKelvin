@@ -115,8 +115,12 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
 })
 
 app.get('/profile', isLoggedIn, (req,res)=>{
-  console.log(req.user);
   res.render('profile',{user:req.user})
+})
+
+app.get('/productDetail', isLoggedIn, (req,res)=>{
+  console.log(req.user);
+  res.render('product_detail',{user:req.user})
 })
 
 app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
