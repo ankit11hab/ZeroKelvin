@@ -3,8 +3,8 @@ const GoogleStrategy = require('passport-google-oauth2').Strategy;
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  clientID: '653237617296-j4n76flsbmkoiq5q2ojufbgm06rkdf4d.apps.googleusercontent.com',
+  clientSecret: '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',
   callbackURL: "/auth/google/callback",
   passReqToCallback: true,
 },
