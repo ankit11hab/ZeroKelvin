@@ -11,7 +11,6 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
 // const multer=require('multer');
-var moment = require('moment');
 const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -121,10 +120,21 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
 })
 
 function scheduleAuctionEvents(eventData,id) {
-  console.log(eventData);
-  console.log(id);
-  console.log(moment(eventData.StartingTime).format('MMMM Do YYYY, h:mm:ss a'));
-}
+  var StartingTime = new Date(eventData.StartingTime);
+  var EndingTime = new Date(eventData.EndingTime);
+  const jobStarting = schedule.scheduleJob(StartingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ongoing"
+    })
+  });
+  const jobEnded = schedule.scheduleJob(EndingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ended"
+    });
+  });
+};
 
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
@@ -135,12 +145,11 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
       email : req.user.email,
     }
   });
-  scheduleAuctionEvents(req.body,res1.id);
-  console.log(req.user)
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
     data : req.body
   });
+  scheduleAuctionEvents(req.body,res1.id);
   res.redirect('/schedule');
 });
 
