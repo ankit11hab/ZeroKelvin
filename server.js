@@ -40,6 +40,12 @@ async function checkStatus(){
   const currentDatetimesecs = new Date().getTime();
   const AuctionsRef = db.collection('Auctions');
 
+   // checkIfCuming
+   const nameQueryRescoming = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
+   if (nameQueryRescoming.empty) {
+     console.log('No matching documents.');
+   }  
+
   // checkIfStarted
   const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '<=', currentDatetimesecs).get();
   if (nameQueryRes.empty) {
@@ -51,6 +57,11 @@ async function checkStatus(){
   if (nameQueryResended.empty) {
     console.log('No matching documents. end');
   }  
+
+  await nameQueryRescoming.forEach(doc => {
+    console.log("DONEDONEDO")
+   AuctionsRef.doc(doc.id).update({status:"Upcoming"})
+  });
   await nameQueryRes.forEach(doc => {
     console.log("DONEDONEDO")
    AuctionsRef.doc(doc.id).update({status:"Started"})
