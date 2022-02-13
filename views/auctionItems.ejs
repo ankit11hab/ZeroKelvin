@@ -114,7 +114,7 @@
                       <% for(var i=0; i < Items._materializedDocs.length; i++) { %>
                         <tr>
                           <td><%=i%></td>
-                          <td><img src="/auction_images/<%= Items._materializedDocs[i]._fieldsProto.image.stringValue %>" width="100px"></td>
+                          <td><img class="AuctionImages" width="100px"></td>
                           <td><%= Items._materializedDocs[i]._fieldsProto.name.stringValue %></td>
                           <td><%= Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue %></td>
                           <td><%= Items._materializedDocs[i]._fieldsProto.Currentbid.stringValue %></td>
@@ -295,8 +295,17 @@
     document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
     document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
     document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
-    
+    const defaultImg = "photo-1568321612313-209650d5d99a.jpg";
+    for(var i=0; i < Items._materializedDocs.length; i++) {
+      if(Items._materializedDocs[i]._fieldsProto.image){
+        document.getElementsByClassName("AuctionImages")[i].src = `/auction_images/${Items._materializedDocs[i]._fieldsProto.image.stringValue}`
+      }else{
+        document.getElementsByClassName("AuctionImages")[i].src = `/auction_images/${defaultImg}`
+      }
+      
+    }
   </script>
+<script src="https://kit.fontawesome.com/448b1e259f.js" crossorigin="anonymous"></script>
 
   <script>
     function uploadImg(e) {
