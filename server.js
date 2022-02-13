@@ -41,14 +41,25 @@ async function checkStatus(){
   const AuctionsRef = db.collection('Auctions');
 
   // checkIfStarted
-  const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
+  const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '<=', currentDatetimesecs).get();
   if (nameQueryRes.empty) {
+    console.log('No matching documents.');
+    return;
+  }  
+
+  // checkIfEnded
+  const nameQueryResended = await AuctionsRef.where('EndingTimeSecs', '<=', currentDatetimesecs).get();
+  if (nameQueryResended.empty) {
     console.log('No matching documents.');
     return;
   }  
   nameQueryRes.forEach(doc => {
     AuctionsRef.doc(doc.id).update({status:"Started"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
+  });
+  nameQueryResended.forEach(doc => {
+    AuctionsRef.doc(doc.id).update({status:"Ended"})
+    console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE__EMDED")
   });
 }
 
