@@ -28,6 +28,8 @@
     <link href="/css/responsive.css" rel="stylesheet" />
     <script>
         var itemData = <%-JSON.stringify(item)%>;
+        var userName = "<%=userName%>";
+        const url = document.URL ;
     </script>
 </head>
 
@@ -267,6 +269,8 @@
     <!-- custom js -->
     <script src="/js/custom.js"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script>
         var bidsData = itemData.Bids
         var placeBidbtn = document.getElementById('bidplaced');
@@ -283,7 +287,36 @@
             else if(value%multiple!=0){
                 alert(`Please Enter bid in the multiple of ${multiple}`);
             }else{
-                document.getElementById('place-bid').value = "";
+                document.getElementById('place-bid').value = "" ;
+                var BidUrl = url + '/placeBid';
+                var data = {
+                    "Author" : userName,
+                    "Value" : value
+                }
+                bidsData.push(data);
+                var BidsJson = {
+                    "Bids" : bidsData
+                }
+                console.log(BidsJson)
+                // $.ajax({
+                //     url: BidUrl,
+                //     type: "POST",
+                //     dataType: "text", // expected format for response
+                //     // contentType: "json",
+                //     data: JSON.stringify(BidsJson),
+
+                //     success: function(data, textStatus, jqXHR)
+                //     {
+                //         console.log(`${data} and ${textStatus}`);
+                //     },
+                //     error: function (jqXHR, textStatus, errorThrown)
+                //     {
+                //         console.log(`${jqXHR} and ${textStatus}`);
+                //     }
+                // });
+                $.post(BidUrl,JSON.stringify(BidsJson),function(data,status){
+                    console.log(`${data} and status is ${status}`);
+                });
             }
         } 
     </script>
