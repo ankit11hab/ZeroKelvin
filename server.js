@@ -109,6 +109,19 @@ app.get('/detail/:id',checkStatus, async (req, res) => {
 app.get('/winners/:id',checkStatus, async (req, res) => {
   const auction = await db.collection('Auctions').doc(req.params.id).get();
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
+  // await db.collection('Auctions').doc(req.params.id).collection('Items').get().then(snapshot => {
+  //   snapshot.docs.forEach(doc => {
+  //     db.collection('Auctions').doc(req.params.id).collection('Items').doc(doc.id).collection('Bids').where('value', '==', doc.Currentbid).get().then
+  //       (querySnapshot => {
+  //         if(!querySnapshot.empty) {
+  //           const winner = querySnapshot.docs[0].data().Author
+  //           db.collection('Auctions').doc(req.params.id).collection('Items').doc(doc.id).update({winner:winner})
+  //           // rest of your code 
+  //         }
+  //     })
+      
+  //   })
+  // })
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
   console.log(list);
   loggedin= req.user ? true : false;
