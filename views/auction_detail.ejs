@@ -89,7 +89,6 @@
         <div class="col-3">
           <div class="running-total">
             <h5>Running Total</h5>
-            <span style="color:#ecbb19;font-size: 25px;">$300</span><br><br>
             <span style="font-size: 18px;">No. of items: </span><span>
               <%= auctionItem.length %>
             </span>
@@ -141,6 +140,9 @@
                       </h5>
                       <div class="product_description">
                         <%= auctionItem[i].description.substring(0, 60) %>
+                      </div>
+                      <div >
+                        Current amount- $<%= auctionItem[i].Currentbid %>
                       </div>
                       <div class="product_info">
 
