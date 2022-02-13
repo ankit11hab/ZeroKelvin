@@ -299,7 +299,6 @@
     const addedDate = addMinutes(currentDate,5);
     const text = addedDate.toISOString();
     const editedText = text.slice(0, -8)
-    console.log(editedText);
     document.getElementById("StartingTime").min = editedText;
     document.getElementById("EndingTime").min = editedText;
   </script>
