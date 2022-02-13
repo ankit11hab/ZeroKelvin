@@ -279,7 +279,7 @@
             ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.title.stringValue} organized by ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.name.stringValue}
           </div>
           <div class="card-body">
-            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.Heading.stringValue}</h5>
+            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.heading.stringValue}</h5>
             <p class="card-text">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.description.stringValue}</p>
             <a href="/editauctiondetails/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Edit Auction</a>
             <a href="/auctionItems/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Add or Remove Items for Auction</a>
