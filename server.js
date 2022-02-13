@@ -47,7 +47,8 @@ async function checkStatus(){
     return;
   }  
   nameQueryRes.forEach(doc => {
-    // AuctionsRef.doc(doc.id)
+    AuctionsRef.doc(doc.id).update({status:"Started"})
+    console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
   });
 }
 
