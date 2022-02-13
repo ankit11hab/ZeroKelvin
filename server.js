@@ -72,9 +72,10 @@ async function checkStatus(req, res, next){
             console.log('No matching documents.');
             itemRef1.update({winner : "Unsold"})
           }else{
-            Bidssnapshot.forEach(doc3 => {
+            Bidssnapshot.forEach(async (doc3) => {
               const winnerName = doc3.data().Author.displayName;
-              itemRef1.update({winner : winnerName})
+              const googleID = doc3.data().Author.id;
+              const itemdataupdated = await itemRef1.update({winner : winnerName});
             });
           }
         });
