@@ -84,20 +84,26 @@ app.get('/detail/:id', async (req, res) => {
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
   console.log(list);
-  res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list})
+  loggedin= req.user ? true : false;
+  res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
 
 app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
-  res.render('item_detail',{item:item.data(),userName:req.user.displayName});
+  const bids = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
+  const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  res.render('item_detail',{item:item.data(),userName:req.user.displayName,auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
 })
 
-app.post('/detail/:id/item/:itemID/placeBid', async (req, res) => {
-  const itemref = db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID);
-  var data = req.body;
+app.post('/placeBid/:id/item/:itemID', async (req, res) => {
+  const auction= await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').add({Author : {
+    id : req.user.id,
+    displayName : req.user.displayName,
+    email : req.user.email,
+  },value:req.body.bidamount});
   console.log(req.body);
-  // await itemref.update(req.body);
-  res.sendStatus(200);
+  await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).update({Currentbid:req.body.bidamount});
+  res.redirect(req.get('referer'));
 })
 
 app.set('view engine', 'ejs')
@@ -159,6 +165,7 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
   Users = await userRef.get();
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   Auction = await auctionRef.get();
+  console.log(Users)
   res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
 
@@ -189,6 +196,7 @@ app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add(req.body);
+  await auctionRef.update({Currentbid:req.body.Startingbid})
   res.redirect(req.get('referer'));
 })
 

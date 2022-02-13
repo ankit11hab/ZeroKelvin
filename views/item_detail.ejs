@@ -91,12 +91,16 @@
                     </div>
                     <div class="row" style="text-align: center;">
                         <div class="col-6">
-                            <input type="text" value="$300" disabled style="text-align: center;font-size: 20px;">
+                            <input type="text" value="$<%=item.Currentbid%>" disabled style="text-align: center;font-size: 20px;">
                         </div>
-                        <div class="col-6">
-                            <input id="place-bid" type="text" style="text-align: center;font-size: 20px;" placeholder="$ Max. bid"><button 
-                            style="border:1px solid rgb(173, 173, 173);height:36px;transform: translate(0,-1px);" id="bidplaced">Place Bid</button>
+                   
+                        <div class="col-6">     <form method="POST" action="/placebid/<%=auctionid%>/item/<%=itemid%>">
+                            <input id="bidamount" name="bidamount" type="number" style="text-align: center;font-size: 20px;" min="<%=parseInt(item.Currentbid) + parseInt(item.Multiple)%>" step="<%=item.Multiple%>" required placeholder="$ Max. bid">
+                            <button 
+                            style="border:1px solid rgb(173, 173, 173);height:36px;transform: translate(0,-1px);" type="submit">Place Bid</button>
+                        </form>
                         </div>
+                   
                 </div>
                 <div class="row" style="margin-top:100px">
                     <div class="col-6">
@@ -120,15 +124,17 @@
                             <th scope="col">Bidder</th>
                             <th scope="col">Bid</th>
                         </tr>
-                        <% for(var i=0; i < item.Bids.length; i++) { %>
+                        <% if(Bids){ %>
+                        <% for(var i=0; i < Bids.length; i++) { %>
                             <tr>
                                 <td>
-                                    <%=item.Bids[i].Author%>
+                                    <%=Bids[i].Author.displayName%>
                                 </td>
                                 <td>
-                                    $<%=item.Bids[i].Value%>
+                                    $<%=Bids[i].value%>
                                 </td>
                             </tr>
+                            <% } %>
                             <% } %>
                     </table></center>
                 </div>
@@ -271,55 +277,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <script>
-        var bidsData = itemData.Bids
-        var placeBidbtn = document.getElementById('bidplaced');
-        console.log(itemData);
-        placeBidbtn.onclick = function () {
-            var multiple = parseInt("<%=item.Multiple%>");
-            var value = document.getElementById('place-bid').value;
-            console.log(value)
-            if(value==""){
-                alert('Please Enter a value to place a bid')
-            }else if(value<=bidsData[bidsData.length-1].Value){
-                alert(`Please Enter bid greater than current Bid`);
-            }
-            else if(value%multiple!=0){
-                alert(`Please Enter bid in the multiple of ${multiple}`);
-            }else{
-                document.getElementById('place-bid').value = "" ;
-                var BidUrl = url + '/placeBid';
-                var data = {
-                    "Author" : userName,
-                    "Value" : value
-                }
-                bidsData.push(data);
-                var BidsJson = {
-                    "Bids" : bidsData
-                }
-                console.log(BidsJson)
-                // $.ajax({
-                //     url: BidUrl,
-                //     type: "POST",
-                //     dataType: "text", // expected format for response
-                //     // contentType: "json",
-                //     data: JSON.stringify(BidsJson),
 
-                //     success: function(data, textStatus, jqXHR)
-                //     {
-                //         console.log(`${data} and ${textStatus}`);
-                //     },
-                //     error: function (jqXHR, textStatus, errorThrown)
-                //     {
-                //         console.log(`${jqXHR} and ${textStatus}`);
-                //     }
-                // });
-                $.post(BidUrl,JSON.stringify(BidsJson),function(data,status){
-                    console.log(`${data} and status is ${status}`);
-                });
-            }
-        } 
-    </script>
 </body>
 
 </html>
