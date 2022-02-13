@@ -11,6 +11,8 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
 // const multer=require('multer');
+var format = require('date-format');
+const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
 initializeApp({
@@ -92,6 +94,7 @@ app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
 
 app.post('/detail/:id/item/:itemID/placeBid', async (req, res) => {
   const itemref = db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID);
+  var data = req.body;
   console.log(req.body);
   // await itemref.update(req.body);
   res.sendStatus(200);

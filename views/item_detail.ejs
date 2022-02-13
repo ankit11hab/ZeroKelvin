@@ -298,30 +298,25 @@
                     "Bids" : bidsData
                 }
                 console.log(BidsJson)
-                $.ajax({
-                    url: BidUrl,
-                    type: "POST",
-                    dataType: "xml/html/script/json", // expected format for response
-                    contentType: "application/json", // send as JSON
-                    data: JSON.stringify(BidsJson),
+                // $.ajax({
+                //     url: BidUrl,
+                //     type: "POST",
+                //     dataType: "text", // expected format for response
+                //     // contentType: "json",
+                //     data: JSON.stringify(BidsJson),
 
-                    complete: function() {
-                        //called when complete
-                        console.log("complete");
-                    },
-
-                    success: function() {
-                        console.log("success");
-                    },
-
-                    error: function(result) {
-                        console.log("error");
-                        console.log(result);
-                    },
-                });
-                                    // $.post(BidUrl,BidsJson,function(data,status){
-                //     console.log(`${data} and status is ${status}`);
+                //     success: function(data, textStatus, jqXHR)
+                //     {
+                //         console.log(`${data} and ${textStatus}`);
+                //     },
+                //     error: function (jqXHR, textStatus, errorThrown)
+                //     {
+                //         console.log(`${jqXHR} and ${textStatus}`);
+                //     }
                 // });
+                $.post(BidUrl,JSON.stringify(BidsJson),function(data,status){
+                    console.log(`${data} and status is ${status}`);
+                });
             }
         } 
     </script>
