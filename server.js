@@ -51,12 +51,12 @@ async function checkStatus(){
   if (nameQueryResended.empty) {
     console.log('No matching documents. end');
   }  
-  nameQueryRes.forEach(doc => {
+  await nameQueryRes.forEach(doc => {
     console.log("DONEDONEDO")
-    AuctionsRef.doc(doc.id).update({status:"Started"})
+   AuctionsRef.doc(doc.id).update({status:"Started"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
   });
-  nameQueryResended.forEach(doc => {
+  await nameQueryResended.forEach(doc => {
     AuctionsRef.doc(doc.id).update({status:"Ended"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE__EMDED")
   });
@@ -196,6 +196,10 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
 app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   const res1 = await auctionRef.update(req.body);
+  const res2=await auctionRef.update({
+    StartingTimeSecs :  new Date(req.body.StartingTime).getTime(),
+    EndingTimeSecs : new Date(req.body.EndingTime).getTime(),
+  });
   const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
   await userItems.update({
     "data.title" : req.body.title,
