@@ -115,6 +115,14 @@ app.get('/detail/:id', async (req, res) => {
   loggedin= req.user ? true : false;
   res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
+app.get('/winners/:id', async (req, res) => {
+  const auction = await db.collection('Auctions').doc(req.params.id).get();
+  const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
+  const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  console.log(list);
+  loggedin= req.user ? true : false;
+  res.render('auction_detail_winner',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
+})
 
 app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
