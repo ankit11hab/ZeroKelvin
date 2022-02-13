@@ -11,7 +11,6 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
 // const multer=require('multer');
-var moment = require('moment');
 const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -21,6 +20,7 @@ initializeApp({
 const db = getFirestore();
 
 function isLoggedIn(req, res, next) {
+  checkStatus();
   req.user ? next() : res.render('login');
   // next()
 }
@@ -34,6 +34,22 @@ app.get('/google', (req, res) => {
   res.render('login')
   // res.send('<a href="/auth/google">Authenticate with Google</a>');
 });
+
+async function checkStatus(){
+
+  const currentDatetimesecs = new Date().getTime();
+  const AuctionsRef = db.collection('Auctions');
+
+  // checkIfStarted
+  const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
+  if (nameQueryRes.empty) {
+    console.log('No matching documents.');
+    return;
+  }  
+  nameQueryRes.forEach(doc => {
+    // AuctionsRef.doc(doc.id)
+  });
+}
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: [ 'email', 'profile' ] }
@@ -84,22 +100,26 @@ app.get('/detail/:id', async (req, res) => {
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
   console.log(list);
-  res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list})
+  loggedin= req.user ? true : false;
+  res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
 
 app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
-  const bidders = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
-  const list = bidders.docs.map((doc)=>({id:doc.id,...doc.data()}));
-  res.render('item_detail',{item:item.data(),userName:req.user.displayName,bidders:list});
+  const bids = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
+  const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  res.render('item_detail',{item:item.data(),userName:req.user.displayName,auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
 })
 
-app.post('/detail/:id/item/:itemID/placeBid', async (req, res) => {
-  const itemref = db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID);
-  var data = req.body;
+app.post('/placeBid/:id/item/:itemID', async (req, res) => {
+  const auction= await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').add({Author : {
+    id : req.user.id,
+    displayName : req.user.displayName,
+    email : req.user.email,
+  },value:req.body.bidamount});
   console.log(req.body);
-  // await itemref.update(req.body);
-  res.sendStatus(200);
+  await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).update({Currentbid:req.body.bidamount});
+  res.redirect(req.get('referer'));
 })
 
 app.set('view engine', 'ejs')
@@ -123,26 +143,41 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
 })
 
 function scheduleAuctionEvents(eventData,id) {
-  console.log(eventData);
-  console.log(id);
-  console.log(moment(eventData.StartingTime).format('MMMM Do YYYY, h:mm:ss a'));
-}
+  var StartingTime = new Date(eventData.StartingTime);
+  var EndingTime = new Date(eventData.EndingTime);
+  const jobStarting = schedule.scheduleJob(StartingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ongoing"
+    })
+  });
+  const jobEnded = schedule.scheduleJob(EndingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ended"
+    });
+  });
+};
 
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
+  const StartingSecs = new Date(req.body.StartingTime).getTime();
+  const EndingSecs = new Date(req.body.EndingTime).getTime();
   await db.collection('Auctions').doc(res1.id).update({
     Author : {
       id : req.user.id,
       displayName : req.user.displayName,
       email : req.user.email,
-    }
+    },
+    status : "Upcoming",
+    StartingTimeSecs : StartingSecs,
+    EndingTimeSecs : EndingSecs,
   });
-  scheduleAuctionEvents(req.body,res1.id);
-  console.log(req.user)
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
     data : req.body
   });
+  scheduleAuctionEvents(req.body,res1.id);
   res.redirect('/schedule');
 });
 
@@ -153,10 +188,17 @@ app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   await userItems.update({
     "data.title" : req.body.title,
     "data.name" : req.body.name,
-    "data.heading" : req.body.heading,
+    "data.Heading" : req.body.heading,
     "data.description" : req.body.description,
   })
   res.redirect(`/editauctiondetails/${req.params.room}`);
+});
+app.get('/DeleteAuction/:room', isLoggedIn, async (req,res)=>{
+  const auctionRef = db.collection('Auctions').doc(req.params.room);
+  const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
+  await userItems.delete();
+  await auctionRef.delete();
+  res.redirect(`/schedule`);
 });
 
 app.get('/profile', isLoggedIn, (req,res)=>{
@@ -173,6 +215,7 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
   Users = await userRef.get();
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   Auction = await auctionRef.get();
+  console.log(Users)
   res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
 
@@ -202,7 +245,13 @@ app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
 })
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
-  const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add(req.body);
+  const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add({
+    name:req.body.name,
+    description:req.body.description,
+    Startingbid:req.body.Startingbid,
+    Multiple:req.body.Multiple,
+    Currentbid:req.body.Startingbid
+  });
   res.redirect(req.get('referer'));
 })
 

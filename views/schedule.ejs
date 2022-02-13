@@ -106,21 +106,22 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/auctionRegister" enctype='multipart/form-data' method="POST">
-              <label for="picture">Image</label>
-              <input type="file" accept="image/*" id="picture" name="picture"><br>
+            <form action="/auctionRegister" method="POST">
+              <!-- <label for="picture">Image</label>
+              <input type="file" accept="image/*" id="picture" name="picture"><br> -->
               <label for="name">Name of Organization</label>
               <input type="text" id="name" name="name"><br>
               <label for="Title of Auction">Title of Auction</label>
               <input type="text" id="title" name="title"><br>
               <label for="Heading of Auction">Heading of Auction</label>
-              <input type="text" id="Heading" name="Heading"><br>
+              <input type="text" id="Heading" name="heading"><br>
               <label for="description of Auction">Description About Auction</label>
-              <textarea name="description" cols="40" rows="5"></textarea><br>
+              <textarea name="description" cols="55" rows="5"></textarea><br>
               <label for="StartingTime">Starting Date and Time</label>
               <input type="datetime-local" id="StartingTime" name="StartingTime">
               <label for="EndingTime">Ending Date and Time</label>
-              <input type="datetime-local" id="EndingTime" name="EndingTime">
+              <input type="datetime-local" id="EndingTime" name="EndingTime"><br>
+              <label style="color: red;">Note : Please Enter time according to UTC Timezone</label>
               <input type="submit" value="Submit">
             </form> 
           </div>
@@ -278,16 +279,29 @@
             ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.title.stringValue} organized by ${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.name.stringValue}
           </div>
           <div class="card-body">
-            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.heading.stringValue}</h5>
+            <h5 class="card-title">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.Heading.stringValue}</h5>
             <p class="card-text">${Auctions._materializedDocs[i]._fieldsProto.data.mapValue.fields.description.stringValue}</p>
             <a href="/editauctiondetails/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Edit Auction</a>
             <a href="/auctionItems/${Auctions._materializedDocs[i]._ref._path.segments[3]}" class="btn btn-primary">Add or Remove Items for Auction</a>
+            <a href="/DeleteAuction/${Auctions._materializedDocs[i]._ref._path.segments[3]}"><button class="btn btn-danger profile-button" type="submit">Delete Auction</button></a>
           </div>
         </div>`;
         main_section.appendChild(para);
       }
     }
     console.log(Auctions);
+  </script>
+
+  <script>
+    function addMinutes(date, minutes) {
+      return new Date(date.getTime() + minutes*60000);
+    }
+    const currentDate = new Date();
+    const addedDate = addMinutes(currentDate,5);
+    const text = addedDate.toISOString();
+    const editedText = text.slice(0, -8)
+    document.getElementById("StartingTime").min = editedText;
+    document.getElementById("EndingTime").min = editedText;
   </script>
 
 </body>

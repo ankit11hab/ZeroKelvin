@@ -293,7 +293,7 @@
                       </td>
                       <td>${Items._materializedDocs[i]._fieldsProto.name.stringValue}</td>
                       <td>${Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue}</td>
-                      <td>-</td>
+                      <td>${Items._materializedDocs[i]._fieldsProto.Currentbid?Items._materializedDocs[i]._fieldsProto.Currentbid.stringValue: null}</td>
                       <td><a href="/deleteItems/${roomId}/${Itemids[i]}"><img src="/delete_black_24dp.svg" /></a></td><tr>`;
         document.getElementById('table_body').innerHTML += temp;
       }
