@@ -20,6 +20,7 @@ initializeApp({
 const db = getFirestore();
 
 function isLoggedIn(req, res, next) {
+  checkStatus();
   req.user ? next() : res.render('login');
   // next()
 }
@@ -33,6 +34,22 @@ app.get('/google', (req, res) => {
   res.render('login')
   // res.send('<a href="/auth/google">Authenticate with Google</a>');
 });
+
+async function checkStatus(){
+
+  const currentDatetimesecs = new Date().getTime();
+  const AuctionsRef = db.collection('Auctions');
+
+  // checkIfStarted
+  const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
+  if (nameQueryRes.empty) {
+    console.log('No matching documents.');
+    return;
+  }  
+  nameQueryRes.forEach(doc => {
+    // AuctionsRef.doc(doc.id)
+  });
+}
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: [ 'email', 'profile' ] }
@@ -144,12 +161,17 @@ function scheduleAuctionEvents(eventData,id) {
 
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
+  const StartingSecs = new Date(req.body.StartingTime).getTime();
+  const EndingSecs = new Date(req.body.EndingTime).getTime();
   await db.collection('Auctions').doc(res1.id).update({
     Author : {
       id : req.user.id,
       displayName : req.user.displayName,
       email : req.user.email,
-    }
+    },
+    status : "Upcoming",
+    StartingTimeSecs : StartingSecs,
+    EndingTimeSecs : EndingSecs,
   });
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
