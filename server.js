@@ -216,8 +216,13 @@ app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
 })
 
 app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
-  const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add(req.body);
-  await auctionRef.update({Currentbid:req.body.Startingbid})
+  const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add({
+    name:req.body.name,
+    description:req.body.description,
+    Startingbid:req.body.Startingbid,
+    Multiple:req.body.Multiple,
+    Currentbid:req.body.Startingbid
+  });
   res.redirect(req.get('referer'));
 })
 
