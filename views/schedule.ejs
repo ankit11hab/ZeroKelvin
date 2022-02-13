@@ -99,8 +99,8 @@
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content" style="height: 550px;overflow-y: scroll;">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Schedule Auction</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -109,20 +109,21 @@
             <form action="/auctionRegister" method="POST">
               <!-- <label for="picture">Image</label>
               <input type="file" accept="image/*" id="picture" name="picture"><br> -->
-              <label for="name">Name of Organization</label>
-              <input type="text" id="name" name="name"><br>
-              <label for="Title of Auction">Title of Auction</label>
-              <input type="text" id="title" name="title"><br>
-              <label for="Heading of Auction">Heading of Auction</label>
-              <input type="text" id="Heading" name="heading"><br>
-              <label for="description of Auction">Description About Auction</label>
-              <textarea name="description" cols="55" rows="5"></textarea><br>
-              <label for="StartingTime">Starting Date and Time</label>
-              <input type="datetime-local" id="StartingTime" name="StartingTime">
-              <label for="EndingTime">Ending Date and Time</label>
-              <input type="datetime-local" id="EndingTime" name="EndingTime"><br>
-              <label style="color: red;">Note : Please Enter time according to UTC Timezone</label>
-              <input type="submit" value="Submit">
+              <label for="name" class="form-label">Name of Organization</label>
+              <input type="text" id="name" name="name" class="form-control"><br>
+              <label for="Title of Auction" class="form-label">Title of Auction</label>
+              <input class="form-control" type="text" id="title" name="title"><br>
+              <label for="Heading of Auction" class="form-label">Heading of Auction</label>
+              <input class="form-control" type="text" id="Heading" name="heading"><br>
+              <label for="description of Auction" class="form-label">Description About Auction</label>
+              <textarea class="form-control" name="description" cols="55" rows="5"></textarea><br>
+              <label for="StartingTime" class="form-label">Starting Date and Time</label>
+              <input class="form-control" type="datetime-local" id="StartingTime" name="StartingTime">
+              <label for="EndingTime" class="form-label">Ending Date and Time</label>
+              <input class="form-control" type="datetime-local" id="EndingTime" name="EndingTime"><br>
+              <label style="color: red;" class="form-label">Note : Please Enter time according to UTC Timezone</label><br>
+              <button type="submit" value="Submit" class="btn btn-primary" style="background-color: rgb(0, 128, 96);">Submit</button>
+
             </form> 
           </div>
         </div>
