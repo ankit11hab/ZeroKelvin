@@ -20,7 +20,7 @@ initializeApp({
 const db = getFirestore();
 
 function isLoggedIn(req, res, next) {
-  checkStatus();
+
   req.user ? next() : res.redirect('/login');
   // next()
 }
@@ -35,42 +35,22 @@ app.get('/google', (req, res) => {
   // res.send('<a href="/auth/google">Authenticate with Google</a>');
 });
 
-async function checkStatus(){
+async function checkStatus(req, res, next){
 
   const currentDatetimesecs = new Date().getTime();
   const AuctionsRef = db.collection('Auctions');
-
-   // checkIfCuming
-   const nameQueryRescoming = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
-   if (nameQueryRescoming.empty) {
-     console.log('No matching documents.');
-   }  
-
-  // checkIfStarted
-  const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '<=', currentDatetimesecs).get();
-  if (nameQueryRes.empty) {
-    console.log('No matching documents.');
-  }  
-
-  // checkIfEnded
-  const nameQueryResended = await AuctionsRef.where('EndingTimeSecs', '<=', currentDatetimesecs).get();
-  if (nameQueryResended.empty) {
-    console.log('No matching documents. end');
-  }  
-
-  await nameQueryRescoming.forEach(doc => {
-    console.log("DONEDONEDO")
-   AuctionsRef.doc(doc.id).update({status:"Upcoming"})
-  });
-  await nameQueryRes.forEach(doc => {
-    console.log("DONEDONEDO")
-   AuctionsRef.doc(doc.id).update({status:"Started"})
-    console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
-  });
-  await nameQueryResended.forEach(doc => {
-    AuctionsRef.doc(doc.id).update({status:"Ended"})
-    console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE__EMDED")
-  });
+  db.collection('Auctions').get().then(snapshot => {
+    snapshot.docs.forEach(doc => {
+      const eachdoc = doc.data().StartingTimeSecs
+      if(doc.data().StartingTimeSecs >=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
+      AuctionsRef.doc(doc.id).update({status:"Upcoming"})
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
+      AuctionsRef.doc(doc.id).update({status:"Started"})
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs <=currentDatetimesecs)
+      AuctionsRef.doc(doc.id).update({status:"Ended"})
+    })
+  })
+  next();
 }
 
 app.get('/auth/google',
@@ -84,7 +64,7 @@ app.get( '/auth/google/callback',
   })
 );
 
-app.get('/view', isLoggedIn, async (req,res) => {
+app.get('/view',checkStatus, isLoggedIn, async (req,res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   doc = await userRef.get();
   if (!doc.exists) {
@@ -95,10 +75,10 @@ app.get('/view', isLoggedIn, async (req,res) => {
 
 
 
-app.get('/', (req,res) => {
+app.get('/', checkStatus,(req,res) => {
   res.redirect('/home');
 })
-app.get('/home', async (req, res) => {
+app.get('/home',checkStatus, async (req, res) => {
   const Auctions = await db.collection('Auctions').get();
   const list = Auctions.docs.map((doc)=>({id:doc.id,...doc.data()}));
   let upcomingAuctions = [], ongoingAuctions = [], pastAuctions=[];
@@ -118,7 +98,7 @@ app.get('/home', async (req, res) => {
     pastAuctions:pastAuctions,isLoggedIn:loggedin});
 })
 
-app.get('/detail/:id', async (req, res) => {
+app.get('/detail/:id',checkStatus, async (req, res) => {
   const auction = await db.collection('Auctions').doc(req.params.id).get();
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
@@ -126,7 +106,7 @@ app.get('/detail/:id', async (req, res) => {
   loggedin= req.user ? true : false;
   res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
-app.get('/winners/:id', async (req, res) => {
+app.get('/winners/:id',checkStatus, async (req, res) => {
   const auction = await db.collection('Auctions').doc(req.params.id).get();
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
   const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
@@ -135,14 +115,14 @@ app.get('/winners/:id', async (req, res) => {
   res.render('auction_detail_winner',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
 
-app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
+app.get('/detail/:id/item/:itemID',checkStatus, isLoggedIn, async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
   const bids = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
   const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
   res.render('item_detail',{item:item.data(),userName:req.user.displayName,auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
 })
 
-app.post('/placeBid/:id/item/:itemID', async (req, res) => {
+app.post('/placeBid/:id/item/:itemID',checkStatus, async (req, res) => {
   const auction= await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').add({Author : {
     id : req.user.id,
     displayName : req.user.displayName,
@@ -162,7 +142,7 @@ app.get('/login',  (req, res) => {
 
 
 
-app.get('/schedule', isLoggedIn, async (req,res)=>{
+app.get('/schedule', isLoggedIn,checkStatus, async (req,res)=>{
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const auctionRef = db.collection('Users').doc(req.user.id).collection('Auctions');
@@ -173,24 +153,24 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
   res.render('schedule',{ Users : Users, Auctions : Auctions})
 })
 
-function scheduleAuctionEvents(eventData,id) {
-  var StartingTime = new Date(eventData.StartingTime);
-  var EndingTime = new Date(eventData.EndingTime);
-  const jobStarting = schedule.scheduleJob(StartingTime, function(){
-    const res1 = db.collection('Auctions').add(req.body);
-    db.collection('Auctions').doc(id).update({
-      "status" : "Ongoing"
-    })
-  });
-  const jobEnded = schedule.scheduleJob(EndingTime, function(){
-    const res1 = db.collection('Auctions').add(req.body);
-    db.collection('Auctions').doc(id).update({
-      "status" : "Ended"
-    });
-  });
-};
+// function scheduleAuctionEvents(eventData,id) {
+//   var StartingTime = new Date(eventData.StartingTime);
+//   var EndingTime = new Date(eventData.EndingTime);
+//   const jobStarting = schedule.scheduleJob(StartingTime, function(){
+//     const res1 = db.collection('Auctions').add(req.body);
+//     db.collection('Auctions').doc(id).update({
+//       "status" : "Ongoing"
+//     })
+//   });
+//   const jobEnded = schedule.scheduleJob(EndingTime, function(){
+//     const res1 = db.collection('Auctions').add(req.body);
+//     db.collection('Auctions').doc(id).update({
+//       "status" : "Ended"
+//     });
+//   });
+// };
 
-app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
+app.post('/auctionRegister',checkStatus, isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
   const StartingSecs = new Date(req.body.StartingTime).getTime();
   const EndingSecs = new Date(req.body.EndingTime).getTime();
@@ -208,11 +188,11 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
     id : res1.id,
     data : req.body
   });
-  scheduleAuctionEvents(req.body,res1.id);
+  // scheduleAuctionEvents(req.body,res1.id);
   res.redirect('/schedule');
 });
 
-app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
+app.post('/UpdateAuction/:room',checkStatus, isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   const res1 = await auctionRef.update(req.body);
   const res2=await auctionRef.update({
@@ -228,7 +208,7 @@ app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   })
   res.redirect(`/editauctiondetails/${req.params.room}`);
 });
-app.get('/DeleteAuction/:room', isLoggedIn, async (req,res)=>{
+app.get('/DeleteAuction/:room',checkStatus, isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
   await userItems.delete();
@@ -236,16 +216,16 @@ app.get('/DeleteAuction/:room', isLoggedIn, async (req,res)=>{
   res.redirect(`/schedule`);
 });
 
-app.get('/profile', isLoggedIn, (req,res)=>{
+app.get('/profile',checkStatus, isLoggedIn, (req,res)=>{
   res.render('profile',{user:req.user})
 })
 
-app.get('/productDetail', isLoggedIn, (req,res)=>{
+app.get('/productDetail',checkStatus,  isLoggedIn, (req,res)=>{
   console.log(req.user);
   res.render('product_detail',{user:req.user})
 })
 
-app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
+app.get('/editauctiondetails/:room',checkStatus,  isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const auctionRef = db.collection('Auctions').doc(req.params.room);
@@ -254,7 +234,7 @@ app.get('/editauctiondetails/:room', isLoggedIn, async (req, res) => {
   res.render('editauction', { roomId: req.params.room, Auction : Auction.data(), Users : Users})
 })
 
-app.post('/editauctiondetails/:room',isLoggedIn, async (req, res) => {
+app.post('/editauctiondetails/:room',checkStatus, isLoggedIn, async (req, res) => {
     db.collection('Auctions').doc(req.params.room).update({
       name:req.body.name,
       title:req.body.title,
@@ -263,7 +243,7 @@ app.post('/editauctiondetails/:room',isLoggedIn, async (req, res) => {
     res.redirect(req.get('referer'));
 });
 
-app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
+app.get('/auctionItems/:room',checkStatus, isLoggedIn, async (req, res) => {
   const userRef = db.collection('Users').doc(req.user.id);
   Users = await userRef.get();
   const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items');
@@ -274,12 +254,12 @@ app.get('/auctionItems/:room', isLoggedIn, async (req, res) => {
   });
   res.render('auctionItems', { roomId: req.params.room,Itemids:itemids, Items : snapshot, Users : Users})
 })
-app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
+app.get('/deleteItems/:room/:itemid', checkStatus,isLoggedIn, async (req, res) => {
   const itemsRef = db.collection('Auctions').doc(req.params.room).collection('Items').doc(req.params.itemid.toString()).delete();
   res.redirect(req.get('referer'));
 })
 
-app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
+app.post('/auctionItems/:room',checkStatus,  isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add({
     name:req.body.name,
     description:req.body.description,
