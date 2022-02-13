@@ -148,9 +148,9 @@
             <div class="box">
               <div class="img-box">
                 <img src="images/p1.png" alt="">
-                <a href="" class="add_cart_btn">
+                <a class="add_cart_btn">
                   <span>
-                    View Details
+                    COMING SOON
                   </span>
                 </a>
               </div>
@@ -198,9 +198,9 @@
             <div class="box">
               <div class="img-box">
                 <img src="images/p1.png" alt="">
-                <a href="/detail<%=pastAuctions[i].id%>" class="add_cart_btn">
+                <a href="/winners/<%=pastAuctions[i].id%>" class="add_cart_btn">
                   <span>
-                    View Details
+                    View Winners
                   </span>
                 </a>
               </div>
@@ -222,7 +222,7 @@
                     <i class="fa fa-star" aria-hidden="true"></i>
                     <i class="fa fa-star" aria-hidden="true"></i>
                     <i class="fa fa-star" aria-hidden="true"></i> -->
-                    <%= moment(pastAuctions[i].EndingTime).format('DD-MM-YYYY') %>
+                    Ended on <%= moment(pastAuctions[i].EndingTime).format('DD-MM-YYYY hh:mm:a') %>
                   </div>
                 </div>
               </div>

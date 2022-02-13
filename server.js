@@ -40,6 +40,12 @@ async function checkStatus(){
   const currentDatetimesecs = new Date().getTime();
   const AuctionsRef = db.collection('Auctions');
 
+   // checkIfCuming
+   const nameQueryRescoming = await AuctionsRef.where('StartingTimeSecs', '>=', currentDatetimesecs).get();
+   if (nameQueryRescoming.empty) {
+     console.log('No matching documents.');
+   }  
+
   // checkIfStarted
   const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '<=', currentDatetimesecs).get();
   if (nameQueryRes.empty) {
@@ -51,12 +57,17 @@ async function checkStatus(){
   if (nameQueryResended.empty) {
     console.log('No matching documents. end');
   }  
-  nameQueryRes.forEach(doc => {
+
+  await nameQueryRescoming.forEach(doc => {
     console.log("DONEDONEDO")
-    AuctionsRef.doc(doc.id).update({status:"Started"})
+   AuctionsRef.doc(doc.id).update({status:"Upcoming"})
+  });
+  await nameQueryRes.forEach(doc => {
+    console.log("DONEDONEDO")
+   AuctionsRef.doc(doc.id).update({status:"Started"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
   });
-  nameQueryResended.forEach(doc => {
+  await nameQueryResended.forEach(doc => {
     AuctionsRef.doc(doc.id).update({status:"Ended"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE__EMDED")
   });
@@ -114,6 +125,14 @@ app.get('/detail/:id', async (req, res) => {
   console.log(list);
   loggedin= req.user ? true : false;
   res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
+})
+app.get('/winners/:id', async (req, res) => {
+  const auction = await db.collection('Auctions').doc(req.params.id).get();
+  const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
+  const list = auctionItems.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  console.log(list);
+  loggedin= req.user ? true : false;
+  res.render('auction_detail_winner',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
 
 app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
@@ -196,6 +215,10 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
 app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   const res1 = await auctionRef.update(req.body);
+  const res2=await auctionRef.update({
+    StartingTimeSecs :  new Date(req.body.StartingTime).getTime(),
+    EndingTimeSecs : new Date(req.body.EndingTime).getTime(),
+  });
   const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
   await userItems.update({
     "data.title" : req.body.title,
