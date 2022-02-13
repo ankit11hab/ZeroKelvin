@@ -89,7 +89,9 @@ app.get('/detail/:id', async (req, res) => {
 
 app.get('/detail/:id/item/:itemID', isLoggedIn, async (req, res) => {
   const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
-  res.render('item_detail',{item:item.data(),userName:req.user.displayName});
+  const bidders = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
+  const list = bidders.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  res.render('item_detail',{item:item.data(),userName:req.user.displayName,bidders:list});
 })
 
 app.post('/detail/:id/item/:itemID/placeBid', async (req, res) => {
