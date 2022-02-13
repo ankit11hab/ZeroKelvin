@@ -291,28 +291,12 @@
   <!-- custom js -->
   <script src="/js/custom.js"></script>
   
-  <!-- <script>
+  <script>
     document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
     document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
     document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
-    console.log(Items);
-    Itemids = <%-JSON.stringify(Itemids)%>;
-    function myfnc() {
-      for (let i = 0; i < Items._materializedDocs.length; i++) {
-        var temp = `<tr><th scope="row">${i+1}</th>
-                      <td class="w-25">
-                        <img src=${Items._materializedDocs[i]._fieldsProto.image.stringValue} class="img-fluid img-thumbnail" alt="Sheep">
-                      </td>
-                      <td>${Items._materializedDocs[i]._fieldsProto.name.stringValue}</td>
-                      <td>${Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue}</td>
-                      <td>${Items._materializedDocs[i]._fieldsProto.Currentbid?Items._materializedDocs[i]._fieldsProto.Currentbid.stringValue: null}</td>
-                      <td><a href="/deleteItems/${roomId}/${Itemids[i]}"><img src="/delete_black_24dp.svg" /></a></td><tr>`;
-        document.getElementById('table_body').innerHTML += temp;
-      }
-    };
-    myfnc(); 
-    console.log('Hi');
-  </script> -->
+    
+  </script>
 
   <script>
     function uploadImg(e) {
