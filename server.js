@@ -11,7 +11,6 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
 // const multer=require('multer');
-var format = require('date-format');
 const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -126,6 +125,23 @@ app.get('/schedule', isLoggedIn, async (req,res)=>{
   res.render('schedule',{ Users : Users, Auctions : Auctions})
 })
 
+function scheduleAuctionEvents(eventData,id) {
+  var StartingTime = new Date(eventData.StartingTime);
+  var EndingTime = new Date(eventData.EndingTime);
+  const jobStarting = schedule.scheduleJob(StartingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ongoing"
+    })
+  });
+  const jobEnded = schedule.scheduleJob(EndingTime, function(){
+    const res1 = db.collection('Auctions').add(req.body);
+    db.collection('Auctions').doc(id).update({
+      "status" : "Ended"
+    });
+  });
+};
+
 app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
   await db.collection('Auctions').doc(res1.id).update({
@@ -135,11 +151,11 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
       email : req.user.email,
     }
   });
-  console.log(req.user)
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
     data : req.body
   });
+  scheduleAuctionEvents(req.body,res1.id);
   res.redirect('/schedule');
 });
 
@@ -147,7 +163,12 @@ app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room);
   const res1 = await auctionRef.update(req.body);
   const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
-  await userItems.update({data : req.body})
+  await userItems.update({
+    "data.title" : req.body.title,
+    "data.name" : req.body.name,
+    "data.heading" : req.body.heading,
+    "data.description" : req.body.description,
+  })
   res.redirect(`/editauctiondetails/${req.params.room}`);
 });
 
