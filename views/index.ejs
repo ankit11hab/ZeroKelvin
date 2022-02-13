@@ -123,7 +123,7 @@
                       <i class="fa fa-star" aria-hidden="true"></i>
                       <i class="fa fa-star" aria-hidden="true"></i>
                       <i class="fa fa-star" aria-hidden="true"></i> -->
-                      <%= moment(ongoingAuctions[i].EndingTime).format('DD-MM-YYYY') %>
+                      Ending on - <%= moment(ongoingAuctions[i].EndingTime).format('DD-MM-YYYY hh:mm:a') %>
                     </div>
                   </div>
                 </div>
@@ -131,11 +131,7 @@
             </div>
           <% } %>
         </div>
-        <div class="btn_box">
-          <a href="" class="view_more-link">
-            View More
-          </a>
-        </div>
+      
       </div>
     <% } %>
 
@@ -176,7 +172,7 @@
                     <i class="fa fa-star" aria-hidden="true"></i>
                     <i class="fa fa-star" aria-hidden="true"></i>
                     <i class="fa fa-star" aria-hidden="true"></i> -->
-                    <%= moment(upcomingAuctions[i].EndingTime).format('DD-MM-YYYY') %>
+                    Starting on <%= moment(upcomingAuctions[i].StartingTime).format('DD-MM-YYYY hh:mm:a') %>
                   </div>
                 </div>
               </div>
@@ -184,11 +180,7 @@
           </div>
         <% } %>
       </div>
-      <div class="btn_box">
-        <a href="" class="view_more-link">
-          View More
-        </a>
-      </div>
+     
     </div>
     <% } %>
 
@@ -238,11 +230,7 @@
           </div>
         <% } %>
       </div>
-      <div class="btn_box" style="margin-top:40px">
-        <a href="" class="view_more-link">
-          View More
-        </a>
-      </div>
+    
     </div>
     <% } %>
 

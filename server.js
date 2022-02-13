@@ -21,7 +21,7 @@ const db = getFirestore();
 
 function isLoggedIn(req, res, next) {
   checkStatus();
-  req.user ? next() : res.render('login');
+  req.user ? next() : res.redirect('/login');
   // next()
 }
 
@@ -44,16 +44,15 @@ async function checkStatus(){
   const nameQueryRes = await AuctionsRef.where('StartingTimeSecs', '<=', currentDatetimesecs).get();
   if (nameQueryRes.empty) {
     console.log('No matching documents.');
-    return;
   }  
 
   // checkIfEnded
   const nameQueryResended = await AuctionsRef.where('EndingTimeSecs', '<=', currentDatetimesecs).get();
   if (nameQueryResended.empty) {
-    console.log('No matching documents.');
-    return;
+    console.log('No matching documents. end');
   }  
   nameQueryRes.forEach(doc => {
+    console.log("DONEDONEDO")
     AuctionsRef.doc(doc.id).update({status:"Started"})
     console.log("DONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONEDONE")
   });
@@ -95,13 +94,14 @@ app.get('/home', async (req, res) => {
   var currTime = new Date();
   console.log(currTime);
   list.map((item)=>{
-    if(item.StartingTime>currTime) 
+    if(item.status=='Upcoming') 
       upcomingAuctions.push(item);
-    else if(item.endingTime<currTime)
+    else if(item.status=='Ended')
       pastAuctions.push(item);
     else
       ongoingAuctions.push(item);
   });
+  
   loggedin= req.user ? true : false;
   res.render('index',{Auctions:list,moment:moment,upcomingAuctions:upcomingAuctions,ongoingAuctions:ongoingAuctions,
     pastAuctions:pastAuctions,isLoggedIn:loggedin});
