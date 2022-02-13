@@ -10,7 +10,18 @@ require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
-// const multer=require('multer');
+const multer=require('multer');
+const storage = multer.diskStorage({
+  destination: (req,file,cb)=>{
+    cb(null,'public/auction_images');
+  },
+  filename: (req,file,cb)=>{
+    cb(null,String(Date.now()).substring(0,10)+'.jpg');
+  }
+});
+
+const upload = multer({storage: storage})
+
 const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -24,6 +35,8 @@ function isLoggedIn(req, res, next) {
   req.user ? next() : res.redirect('/login');
   // next()
 }
+
+
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -190,7 +203,7 @@ function scheduleAuctionEvents(eventData,id) {
   });
 };
 
-app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
+app.post('/auctionRegister', upload.single("image"), isLoggedIn, async (req,res)=>{
   const res1 = await db.collection('Auctions').add(req.body);
   const StartingSecs = new Date(req.body.StartingTime).getTime();
   const EndingSecs = new Date(req.body.EndingTime).getTime();
@@ -203,6 +216,7 @@ app.post('/auctionRegister', isLoggedIn, async (req,res)=>{
     status : "Upcoming",
     StartingTimeSecs : StartingSecs,
     EndingTimeSecs : EndingSecs,
+    image: String(Date.now()).substring(0,10)+'.jpg'
   });
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
@@ -279,15 +293,24 @@ app.get('/deleteItems/:room/:itemid', isLoggedIn, async (req, res) => {
   res.redirect(req.get('referer'));
 })
 
-app.post('/auctionItems/:room', isLoggedIn, async (req,res)=>{
+app.post('/auctionItems/:room', upload.single("image"), isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add({
     name:req.body.name,
     description:req.body.description,
     Startingbid:req.body.Startingbid,
     Multiple:req.body.Multiple,
-    Currentbid:req.body.Startingbid
+    Currentbid:req.body.Startingbid,
+    image: String(Date.now()).substring(0,10)+'.jpg'
   });
   res.redirect(req.get('referer'));
+})
+
+app.post('/test', upload.single("image"), (req,res)=>{
+  res.send("Image uploaded");
+})
+
+app.get('/test', (req,res)=>{
+  res.render("test_image");
 })
 
 app.get('/logout', function(req, res) {
