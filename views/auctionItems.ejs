@@ -111,6 +111,16 @@
                       </tr>
                     </thead>
                     <tbody id="table_body">
+                      <% for(var i=0; i < Items._materializedDocs.length; i++) { %>
+                        <tr>
+                          <td><%=i%></td>
+                          <td><img src="/auction_images/<%= Items._materializedDocs[i]._fieldsProto.image.stringValue %>" width="100px"></td>
+                          <td><%= Items._materializedDocs[i]._fieldsProto.name.stringValue %></td>
+                          <td><%= Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue %></td>
+                          <td><%= Items._materializedDocs[i]._fieldsProto.Currentbid.stringValue %></td>
+                          <td><a href="/deleteItems/<%=roomId%>/<%=Itemids[i]%>"><img src="/delete_black_24dp.svg" /></a></td>
+                        </tr>
+                      <% } %>
                     </tbody>
                   </table>   
                   </div>
@@ -131,7 +141,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <form action="/auctionItems/<%=roomId%>" method="POST">
+                        <form action="/auctionItems/<%=roomId%>" method="POST" enctype="multipart/form-data">
                           <label for="name">ItemName</label>
                           <input type="text" id="name" name="name"><br>
                           <label for="description of Auction">Description of Item</label>
@@ -140,6 +150,8 @@
                           <input type="number" id="Startingbid" name="Startingbid"><br>
                           <label for="Multiple">Bid in Multiple of </label>
                           <input type="number" id="Multiple" name="Multiple">
+                          <label for="image">Upload item image </label>
+                          <input type="file" id="image" name="image">
                           <input type="submit" value="Submit">
                         </form> 
                       </div>
@@ -279,7 +291,7 @@
   <!-- custom js -->
   <script src="/js/custom.js"></script>
   
-  <script>
+  <!-- <script>
     document.getElementById("myImg").src = Users._fieldsProto.picture.stringValue;
     document.getElementById('name').innerHTML = Users._fieldsProto.displayName.stringValue;
     document.getElementById('email').innerHTML = Users._fieldsProto.email.stringValue;
@@ -289,7 +301,7 @@
       for (let i = 0; i < Items._materializedDocs.length; i++) {
         var temp = `<tr><th scope="row">${i+1}</th>
                       <td class="w-25">
-                        <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg" class="img-fluid img-thumbnail" alt="Sheep">
+                        <img src=${Items._materializedDocs[i]._fieldsProto.image.stringValue} class="img-fluid img-thumbnail" alt="Sheep">
                       </td>
                       <td>${Items._materializedDocs[i]._fieldsProto.name.stringValue}</td>
                       <td>${Items._materializedDocs[i]._fieldsProto.Startingbid.stringValue}</td>
@@ -300,6 +312,12 @@
     };
     myfnc(); 
     console.log('Hi');
+  </script> -->
+
+  <script>
+    function uploadImg(e) {
+      console.log(e);
+    }
   </script>
 
 </body>

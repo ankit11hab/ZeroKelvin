@@ -10,7 +10,18 @@ require('dotenv').config()
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 var bodyParser = require('body-parser');
-// const multer=require('multer');
+const multer=require('multer');
+const storage = multer.diskStorage({
+  destination: (req,file,cb)=>{
+    cb(null,'public/auction_images');
+  },
+  filename: (req,file,cb)=>{
+    cb(null,String(Date.now()).substring(0,10)+'.jpg');
+  }
+});
+
+const upload = multer({storage: storage})
+
 const schedule = require('node-schedule');
 const serviceAccount = require('./e-auction-788fe-firebase-adminsdk-ezaf4-ba148ec705.json');
 
@@ -24,6 +35,8 @@ function isLoggedIn(req, res, next) {
   req.user ? next() : res.redirect('/login');
   // next()
 }
+
+
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -40,14 +53,32 @@ async function checkStatus(req, res, next){
   const currentDatetimesecs = new Date().getTime();
   const AuctionsRef = db.collection('Auctions');
   db.collection('Auctions').get().then(snapshot => {
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach(async (doc) => {
       const eachdoc = doc.data().StartingTimeSecs
-      if(doc.data().StartingTimeSecs >=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Upcoming"})
-      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Started"})
-      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs <=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Ended"})
+      if(doc.data().StartingTimeSecs >=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs && doc.data().status != "Upcoming")
+      AuctionsRef.doc(doc.id).update({status:"Upcoming"});
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs && doc.data().status != "Started")
+      AuctionsRef.doc(doc.id).update({status:"Started"});
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs <=currentDatetimesecs && doc.data().status != "Ended"){
+        AuctionsRef.doc(doc.id).update({status:"Ended"});
+        const itemsRef = db.collection('Auctions').doc(doc.id).collection('Items');
+        const snapshot = await itemsRef.get();
+        snapshot.forEach(async (doc1) => {
+          const itemRef1 = db.collection('Auctions').doc(doc.id).collection('Items').doc(doc1.id);
+          const currentBid = await itemRef1.get().then((value)=> value.data().Currentbid);
+          const BidsRef = db.collection('Auctions').doc(doc.id).collection('Items').doc(doc1.id).collection('Bids');
+          const Bidssnapshot = await BidsRef.where('value', '==', currentBid).get();
+          if (Bidssnapshot.empty) {
+            console.log('No matching documents.');
+            itemRef1.update({winner : "Unsold"})
+          }else{
+            Bidssnapshot.forEach(doc3 => {
+              const winnerName = doc3.data().Author.displayName;
+              itemRef1.update({winner : winnerName})
+            });
+          }
+        });
+      }
     })
   })
   next();
@@ -106,6 +137,7 @@ app.get('/detail/:id',checkStatus, async (req, res) => {
   loggedin= req.user ? true : false;
   res.render('auction_detail',{docID:req.params.id,auction:auction.data(),auctionItem:list,isLoggedIn:loggedin})
 })
+
 app.get('/winners/:id',checkStatus, async (req, res) => {
   const auction = await db.collection('Auctions').doc(req.params.id).get();
   const auctionItems = await db.collection('Auctions').doc(req.params.id).collection('Items').get();
@@ -209,6 +241,7 @@ app.post('/auctionRegister',checkStatus, isLoggedIn, async (req,res)=>{
     status : "Upcoming",
     StartingTimeSecs : StartingSecs,
     EndingTimeSecs : EndingSecs,
+    image: String(Date.now()).substring(0,10)+'.jpg'
   });
   await db.collection('Users').doc(req.user.id).collection('Auctions').doc(res1.id).set({
     id : res1.id,
@@ -285,15 +318,24 @@ app.get('/deleteItems/:room/:itemid', checkStatus,isLoggedIn, async (req, res) =
   res.redirect(req.get('referer'));
 })
 
-app.post('/auctionItems/:room',checkStatus,  isLoggedIn, async (req,res)=>{
+app.post('/auctionItems/:room', upload.single("image"), checkStatus,isLoggedIn, async (req,res)=>{
   const auctionRef = db.collection('Auctions').doc(req.params.room).collection('Items').add({
     name:req.body.name,
     description:req.body.description,
     Startingbid:req.body.Startingbid,
     Multiple:req.body.Multiple,
-    Currentbid:req.body.Startingbid
+    Currentbid:req.body.Startingbid,
+    image: String(Date.now()).substring(0,10)+'.jpg'
   });
   res.redirect(req.get('referer'));
+})
+
+app.post('/test', upload.single("image"), (req,res)=>{
+  res.send("Image uploaded");
+})
+
+app.get('/test', (req,res)=>{
+  res.render("test_image");
 })
 
 app.get('/logout', function(req, res) {
