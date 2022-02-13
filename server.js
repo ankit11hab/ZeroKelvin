@@ -189,7 +189,7 @@ app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   await userItems.update({
     "data.title" : req.body.title,
     "data.name" : req.body.name,
-    "data.heading" : req.body.heading,
+    "data.Heading" : req.body.heading,
     "data.description" : req.body.description,
   })
   res.redirect(`/editauctiondetails/${req.params.room}`);
