@@ -93,11 +93,11 @@ a:focus {
 }
 
 .sub_page .about_section {
-  background-color: #313958;
+  background-color: rgb(0, 128, 96);
 }
 
 .header_section {
-  background-color: #3a4468;
+  background: #002e25;
 }
 
 .landing_header_section {
@@ -112,7 +112,7 @@ a:focus {
 
 .header_section .header_top {
   padding: 15px 0;
-  background-color: #434f78;
+  background-color: rgb(0, 128, 96);
 }
 
 .header_section .header_bottom {
@@ -380,7 +380,7 @@ a:focus {
   position: unset;
   width: 50px;
   height: 50px;
-  background-color: #3a4468;
+  background-color: rgb(0, 128, 96);
   opacity: 1;
   -webkit-transition: all .2s;
   transition: all .2s;
@@ -446,7 +446,8 @@ a:focus {
   text-align: center;
   height: 45px;
   line-height: 45px;
-  background-color: #3a4468;
+  background-color: rgb(0, 128, 96);
+  border-radius: 4px;
   color: #ffffff;
   position: absolute;
   bottom: 50%;
@@ -460,8 +461,8 @@ a:focus {
 }
 
 .product_section .box .img-box .add_cart_btn:hover {
-  background-color: #f3c93e;
-  color: #ffffff;
+  background-color: #002e25;
+  color: white;
 }
 
 .product_section .box .img-box::before {
@@ -506,7 +507,7 @@ a:focus {
 }
 
 .product_section .box .star_container {
-  color: #f2b01e;
+  color: #004c3f;
 }
 
 .product_section .box:hover .img-box .add_cart_btn {
@@ -531,21 +532,21 @@ a:focus {
 .product_section .btn_box .view_more-link {
   display: inline-block;
   padding: 10px 45px;
-  background-color: #f3c93e;
+  background-color: rgb(0, 128, 96);
   color: #ffffff;
   border-radius: 5px;
-  border: 1px solid #f3c93e;
+  border: 1px solid rgb(0, 128, 96);
   -webkit-transition: all .3s;
   transition: all .3s;
 }
 
 .product_section .btn_box .view_more-link:hover {
   background-color: transparent;
-  color: #f3c93e;
+  color: rgb(0, 128, 96);
 }
 
 .about_section {
-  background-color: #3a4468;
+  background-color: #004c3f;
   color: #ffffff;
 }
 
@@ -628,7 +629,7 @@ a:focus {
 }
 
 .why_us_section .box .detail-box a:hover {
-  color: #f3c93e;
+  color: #3a4468;
 }
 
 .why_us_section .box:hover .img-box img {
@@ -698,7 +699,7 @@ a:focus {
   top: 24%;
   z-index: 9;
   opacity: 1;
-  background-color: #3a4468;
+  background-color: rgb(0, 128, 96);
   font-size: 24px;
   -webkit-transition: all .2s;
   transition: all .2s;
@@ -717,8 +718,12 @@ a:focus {
   right: 45px;
 }
 
+.price {
+  color:#004c3f;
+}
+
 .info_section {
-  background-color: #3a4468;
+  background-color: #004c3f;
   color: #ffffff;
   padding: 90px 0 45px 0;
 }
@@ -775,7 +780,7 @@ a:focus {
 /* footer section*/
 .footer_section {
   position: relative;
-  background-color: #3a4468;
+  background-color: #004c3f;
   text-align: center;
 }
 
@@ -791,8 +796,14 @@ a:focus {
 }
 /*# sourceMappingURL=style.css.map */
 
-.detail-container {
-  margin: 80px 70px 80px 70px;
+.detail-container-head {
+  height: 661px;
+  padding: 80px 70px 80px 70px;
+  background: url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221440%22%20height%3D%22661.1%22%20viewBox%3D%220%200%201440%20661.1%22%3E%3Cstyle%20type%3D%22text%2Fcss%22%3Ecircle%2C%20ellipse%2C%20line%2C%20path%2C%20polygon%2C%20polyline%2C%20rect%2C%20text%20%7B%20fill%3A%20rgb%280%2C%20128%2C%2096%29%20%21important%3B%20%7D%3C%2Fstyle%3E%3Cpath%20fill%3D%22rgb%280%2C%20128%2C%2096%29%22%20d%3D%22M1440%20488c-19.3%204.3-39.2%208.6-60%2013-174.2%2036.5-228.8%20288-467%2076.2-153.6-136.6-424-22.8-660.4-5.8-130.2%209.3-252.6-75-252.6-75V0h1440%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.detail-container-sec {
+  padding: 0px 70px 80px 70px;
 }
 
 .auction-heading {
@@ -801,14 +812,14 @@ a:focus {
 }
 
 .auction-title {
-  color: #f3c93e;
+  color: white;
   font-size: 20px;
   font-weight: 500;
 }
 
 .auction-description {
   margin-top: 30px;
-  color: #999999;
+  color: #d6d6d6;
   font-size: 17px;
 }
 
@@ -817,8 +828,8 @@ a:focus {
   margin-top: 30px;
   width: 250px;
   height: 190px;
-  background-color: #f5f5f5;
   border: 1px solid #c9c9c9;
+  color: white;
   border-radius: 5px;
 }
 
@@ -827,7 +838,7 @@ a:focus {
   margin-top: 30px;
   width: 100%;
   height: 190px;
-  background-color: #f5f5f5;
+  color: white;
   border: 1px solid #c9c9c9;
   border-radius: 5px;
 }

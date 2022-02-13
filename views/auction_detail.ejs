@@ -25,11 +25,11 @@
   <!-- Custom styles for this template -->
   <link href="/css/style.css" rel="stylesheet" />
   <!-- responsive style -->
-  <link href="/css/responsive.css" rel="stylesheet"/>
+  <link href="/css/responsive.css" rel="stylesheet" />
 
 </head>
 
-<body>
+<body style="background:#fbf7ed">
 
   <div class="hero_area">
     <!-- header section strats -->
@@ -69,96 +69,101 @@
   </div>
 
   <section class="detail-container">
-    <div class="heading_container">
-      <h2 class='auction-heading'>
-        <%= auction.heading %>
-      </h2>
-    </div>
-
-    <div class="auction-title">
-      <%= auction.title %>
-    </div>
-
-    <div class="auction-description">
-      <%= auction.description %>
-    </div>
-
-    <div class="row">
-      <div class="col-3">
-        <div class="running-total">
-          <h5>Running Total</h5>
-          <span style="color:#ecbb19;font-size: 25px;">$300</span><br><br>
-          <span style="font-size: 18px;">No. of items: </span><span><%= auctionItem.length %></span>
-        </div>
+    <div class="detail-container-head">
+      <div class="heading_container">
+        <h2 class='auction-heading' style="color:white">
+          <%= auction.Heading %>
+        </h2>
       </div>
-      <div class="col-9">
-        <div class="author">
-          <h5>Items in this auction are being sold by <%= auction.Author.displayName %>
-          </h5><br>
-          <span style="font-size: 18px;font-weight:bold;">Contact Name: </span><span
-            style="margin-left:10px;font-size: 18px;color:rgb(53, 53, 53)">
-            <%= auction.Author.displayName %>
-          </span><br>
-          <span style="font-size: 18px;font-weight:bold;">Email: </span><span
-            style="margin-left:10px;font-size: 18px;color:rgb(53, 53, 53)">
-            <%= auction.Author.email %>
-          </span>
+
+      <div class="auction-title">
+        <%= auction.title %>
+      </div>
+
+      <div class="auction-description">
+        <%= auction.description %>
+      </div>
+
+      <hr style="background:white;border:0.5px solid white">
+
+      <div class="row">
+        <div class="col-3">
+          <div class="running-total">
+            <h5>Running Total</h5>
+            <span style="color:#ecbb19;font-size: 25px;">$300</span><br><br>
+            <span style="font-size: 18px;">No. of items: </span><span>
+              <%= auctionItem.length %>
+            </span>
+          </div>
+        </div>
+        <div class="col-9">
+          <div class="author">
+            <h5>Items in this auction are being sold by <%= auction.Author.displayName %>
+            </h5><br>
+            <span style="font-size: 18px;font-weight:bold;">Contact Name: </span><span
+              style="margin-left:10px;font-size: 18px;">
+              <%= auction.Author.displayName %>
+            </span><br>
+            <span style="font-size: 18px;font-weight:bold;">Email: </span><span
+              style="margin-left:10px;font-size: 18px;">
+              <%= auction.Author.email %>
+            </span>
+          </div>
         </div>
       </div>
     </div>
     <div style="clear:both"></div>
     <div class="hero_area">
-      <section class="product_section layout_padding">
-        <div class="display-items">
-          <div class="heading_container">
-            <h2 class='items-heading'>
-              Items
-            </h2>
-          </div>
+      <div class="detail-container-sec">
+        <section class="product_section layout_padding">
+          <div class="display-items">
+            <div class="heading_container">
+              <h2 class='items-heading'>
+                Items
+              </h2>
+            </div>
 
 
-          <div class="row">
-            <% for(var i=0; i < auctionItem.length; i++) { %>
-              <div class="col-sm-4 col-lg-3">
-                <div class="box">
-                  <div class="img-box">
-                    <img src="/images/p1.png" alt="">
-                    
-                <% if(isLoggedIn){ %>
-                    <a href="/detail/<%=docID%>/item/<%=auctionItem[i].id%>" class="add_cart_btn">
-                      <% } %>
-                      <% if(!isLoggedIn){ %>
-                        <a href="/login" class="add_cart_btn">
-                          <% } %>
-                      <span>
-                        View Details
-                      </span>
-                    </a>
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      <%= auctionItem[i].name %>
-                    </h5>
-                    <div class="product_description">
-                      <%= auctionItem[i].description.substring(0, 60) %>
+            <div class="row">
+              <% for(var i=0; i < auctionItem.length; i++) { %>
+                <div class="col-sm-4 col-lg-3">
+                  <div class="box" style="border:0.1px solid rgb(219, 219, 219);padding:0;border-radius:6px">
+                    <div class="img-box">
+                      <img src="/images/p1.png" alt="">
+                      <a href="/detail/<%=docID%>/item/<%=auctionItem[i].id%>" class="add_cart_btn">
+                        <span>
+                          View Details
+                        </span>
+                      </a>
                     </div>
-                    <div class="product_info">
+                    <div class="detail-box" style="padding: 10px;">
+                      <h5>
+                        <%= auctionItem[i].name %>
+                      </h5>
+                      <div class="product_description">
+                        <%= auctionItem[i].description.substring(0, 60) %>
+                      </div>
+                      <div class="product_info">
 
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <% } %>
+                <% } %>
+            </div>
           </div>
-        </div>
-      </section>
+      </div>
     </div>
+  </section>
+  </div>
 
-    <div>
+  <div>
 
-    </div>
+  </div>
 
   </section>
+
+
 
   <!-- info section -->
   <section class="info_section ">
