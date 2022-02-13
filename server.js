@@ -193,6 +193,13 @@ app.post('/UpdateAuction/:room', isLoggedIn, async (req,res)=>{
   })
   res.redirect(`/editauctiondetails/${req.params.room}`);
 });
+app.get('/DeleteAuction/:room', isLoggedIn, async (req,res)=>{
+  const auctionRef = db.collection('Auctions').doc(req.params.room);
+  const userItems = db.collection('Users').doc(req.user.id).collection('Auctions').doc(req.params.room);
+  await userItems.delete();
+  await auctionRef.delete();
+  res.redirect(`/schedule`);
+});
 
 app.get('/profile', isLoggedIn, (req,res)=>{
   res.render('profile',{user:req.user})
