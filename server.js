@@ -40,14 +40,32 @@ async function checkStatus(req, res, next){
   const currentDatetimesecs = new Date().getTime();
   const AuctionsRef = db.collection('Auctions');
   db.collection('Auctions').get().then(snapshot => {
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach(async (doc) => {
       const eachdoc = doc.data().StartingTimeSecs
-      if(doc.data().StartingTimeSecs >=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Upcoming"})
-      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Started"})
-      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs <=currentDatetimesecs)
-      AuctionsRef.doc(doc.id).update({status:"Ended"})
+      if(doc.data().StartingTimeSecs >=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs && doc.data().status != "Upcoming")
+      AuctionsRef.doc(doc.id).update({status:"Upcoming"});
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs >=currentDatetimesecs && doc.data().status != "Started")
+      AuctionsRef.doc(doc.id).update({status:"Started"});
+      if(doc.data().StartingTimeSecs <=currentDatetimesecs && doc.data().EndingTimeSecs <=currentDatetimesecs && doc.data().status != "Ended"){
+        AuctionsRef.doc(doc.id).update({status:"Ended"});
+        const itemsRef = db.collection('Auctions').doc(doc.id).collection('Items');
+        const snapshot = await itemsRef.get();
+        snapshot.forEach(async (doc1) => {
+          const itemRef1 = db.collection('Auctions').doc(doc.id).collection('Items').doc(doc1.id);
+          const currentBid = await itemRef1.get().then((value)=> value.data().Currentbid);
+          const BidsRef = db.collection('Auctions').doc(doc.id).collection('Items').doc(doc1.id).collection('Bids');
+          const Bidssnapshot = await BidsRef.where('value', '==', currentBid).get();
+          if (Bidssnapshot.empty) {
+            console.log('No matching documents.');
+            itemRef1.update({winner : "Unsold"})
+          }else{
+            Bidssnapshot.forEach(doc3 => {
+              const winnerName = doc3.data().Author.displayName;
+              itemRef1.update({winner : winnerName})
+            });
+          }
+        });
+      }
     })
   })
   next();
