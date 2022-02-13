@@ -28,10 +28,6 @@
     <link href="/css/responsive.css" rel="stylesheet" />
     <script>
         var itemData = <%-JSON.stringify(item)%>;
-        var userName = "<%=userName%>";
-
-        //Variables to be updated
-       
         const url = document.URL ;
     </script>
 </head>
@@ -78,59 +74,18 @@
     <div class="hero_area" style="margin-top: 70px;">
         <div class="heading_container heading_center">
             <h2>
-                <%=item.name%>
+                Item name <%=item.name%>
             </h2>
         </div>
         <section class="product_section layout_padding">
             <div class="container">
-                <div style="background-color: rgb(240, 255, 251);padding: 20px 0 20px 0;border:1px solid rgb(0, 128, 96);border-radius: 8px;">
-                    <div class="row" style="text-align: center;">
-                        <div class="col-6">
-                            <h4>Current Bid</h4>
-                        </div>
-                        <div class="col-6">
-                            <h4>My Bid</h4>
-                        </div>
-                    </div>
-                    <div class="row" style="text-align: center;">
-                        <div class="col-6">
-                            <input type="text" id="currentbid"  disabled style="text-align: center;font-size: 20px;">
-                        </div>
-                   
-                        <div class="col-6">     <form method="POST" action="/placebid/<%=auctionid%>/item/<%=itemid%>">
-                            <input id="bidamount" name="bidamount" type="number" style="text-align: center;font-size: 20px;"   required placeholder="$ Max. bid">
-                            <button 
-                            style="border:1px solid rgb(173, 173, 173);height:36px;transform: translate(0,-1px);" type="submit">Place Bid</button>
-                        </form>
-                        </div>
-                   
-                </div>
-                <div class="row" style="margin-top:100px">
-                    <div class="col-6">
-                        <img src="/images/camm.jpg" width="100%">
-                    </div>
-                    <div class="col-6">
-                        <h3>Item Description</h3><br>
-                        <div style="color:rgb(109, 109, 109)">
-                            <%=item.description%><br>
-                        </div>
-                        <hr>
-                        <h5>Starting Bid: $<%=item.Startingbid%>
-                        </h5>
-                        <h5>Multiple: $<%=item.Multiple%>
-                        </h5>
-                        <a href="#place-bid"><button style="background:#e4b51d;outline: none;border: 1px solid #b89112;color: white;padding: 8px 17px 8px 17px;border-radius: 5px;margin-top: 10px;">Bid Now</button></a>
-                    </div>
-                </div>
                 <div style="margin-top:70px;text-align: center;">
-                    <h3 style="font-weight:500;margin-bottom: 30px;">Bidding</h3>
+                    <h3 style="font-weight:500;margin-bottom: 30px;">All Bids</h3>
                     <center><table class="table table-striped" style="width:600px">
                         <tr>
                             <th scope="col">Bidder</th>
                             <th scope="col">Bid</th>
                         </tr>
-                    <tbody id="bidtable">
-                        
                         <% if(Bids){ %>
                         <% for(var i=0; i < Bids.length; i++) { %>
                             <tr>
@@ -143,7 +98,6 @@
                             </tr>
                             <% } %>
                             <% } %>
-                    </tbody>   
                     </table></center>
                 </div>
             </div>
@@ -245,57 +199,6 @@
         </div>
     </section>
 
-    <script>
-        var Currentbid=<%=item.Currentbid%>;
-        var Multiple=<%=item.Multiple%>;
-        document.getElementById('bidamount').min=parseInt(Currentbid) + parseInt(Multiple)
-        document.getElementById('bidamount').step=parseInt(Multiple)
-        document.getElementById('currentbid').value=Currentbid
-        
-        
-        function updatedata(){
-            document.getElementById('bidamount').min=parseInt(Currentbid) + parseInt(Multiple)
-            document.getElementById('bidamount').step=parseInt(Multiple)
-            document.getElementById('currentbid').value=Currentbid
-            
-        }
-       
-
-        async  function callapi () {
-        await fetch('/itemdataupdate/<%=auctionid%>/item/<%=itemid%>', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        }).then(function(response) {
-            response.json().then((res)=>{
-                Currentbid=res.item.Currentbid;
-                Multiple=res.item.Multiple;
-                updatedata();
-                document.getElementById('bidtable').innerHTML=null;
-                for (let i = 0; i < res.Bids.length ; i++) {
-        var temp = `<tr>
-                                <td>
-                                    ${res.Bids[i].Author.displayName}
-                                </td>
-                                <td>
-                                    $${res.Bids[i].value}
-                                </td>
-                            </tr>`;
-        document.getElementById('bidtable').innerHTML += temp;
-      }
-            });      
-        })
-
-    }
-    setInterval(function(){ 
-   callapi();   
-}, 5000);
-
-
-   
-    </script>
-
     <!-- end info_section -->
 
 
@@ -315,9 +218,8 @@
         crossorigin="anonymous"></script>
 
 
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+    <!-- jQery -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
     <!-- bootstrap js -->
     <script src="/js/bootstrap.js"></script>
     <!-- custom js -->

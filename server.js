@@ -134,6 +134,19 @@ app.get('/detail/:id/item/:itemID',checkStatus, isLoggedIn, async (req, res) => 
   const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
   res.render('item_detail',{item:item.data(),userName:req.user.displayName,auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
 })
+app.get('/itemdataupdate/:id/item/:itemID', async (req, res) => {
+  const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
+  const bids = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
+  const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).send({item:item.data(),auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
+})
+app.get('/bids/:id/item/:itemID',checkStatus, async (req, res) => {
+  const item = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).get();
+  const bids = await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').get();
+  const bidlist = bids.docs.map((doc)=>({id:doc.id,...doc.data()}));
+  res.render('auction_detail_bids',{item:item.data(),auctionid:req.params.id,itemid:req.params.itemID,Bids:bidlist});
+})
 
 app.post('/placeBid/:id/item/:itemID',checkStatus, async (req, res) => {
   const auction= await db.collection('Auctions').doc(req.params.id).collection('Items').doc(req.params.itemID).collection('Bids').add({Author : {
